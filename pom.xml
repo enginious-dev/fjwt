@@ -12,6 +12,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <dep.spring.security.version>5.4.6</dep.spring.security.version>
+        <dep.commons.lang.version>3.12.0</dep.commons.lang.version>
         <dep.servlet.api.version>4.0.1</dep.servlet.api.version>
         <dep.lombok.version>1.18.20</dep.lombok.version>
         <dep.jjwt.version>0.9.1</dep.jjwt.version>
@@ -50,6 +51,12 @@
             <artifactId>jaxb-api</artifactId>
             <version>${dep.jaxb.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${dep.commons.lang.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
