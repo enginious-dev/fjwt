@@ -44,9 +44,9 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = fjwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                logger.warn("Unable to get JWT Token");
+                logger.warn("Unable to get JWT token");
             } catch (ExpiredJwtException e) {
-                logger.warn("JWT Token expired");
+                logger.warn("JWT token expired");
             }
 
             if (StringUtils.isNotBlank(username) && SecurityContextHolder.getContext().getAuthentication() == null) {

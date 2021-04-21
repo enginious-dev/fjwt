@@ -3,6 +3,7 @@ package com.enginious.fjwt.core;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,11 @@ import java.util.function.Function;
 @Component
 public class FjwtTokenUtil implements Serializable {
 
-    private final long ttl;
+    private final int ttl;
     private final String secret;
     private final SignatureAlgorithm algorithm;
 
-    public FjwtTokenUtil(@Value("${fjwt.ttl:18000}") long ttl, @Value("${fjwt.secret:secret}") String secret, @Value("${fjwt.algorithm:HS512}") SignatureAlgorithm algorithm) {
+    public FjwtTokenUtil(@Value("${fjwt.ttl:3600}") int ttl, @Value("${fjwt.secret:secret}") String secret, @Value("${fjwt.algorithm:HS512}") SignatureAlgorithm algorithm) {
         this.ttl = ttl;
         this.secret = secret;
         this.algorithm = algorithm;
@@ -55,12 +56,13 @@ public class FjwtTokenUtil implements Serializable {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
+        Date now = new Date(System.currentTimeMillis());
         return Jwts
                 .builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ttl * 1000))
+                .setIssuedAt(now)
+                .setExpiration(DateUtils.addSeconds(new Date(), ttl))
                 .signWith(algorithm, secret)
                 .compact();
     }
