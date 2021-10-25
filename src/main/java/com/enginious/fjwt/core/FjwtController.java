@@ -20,7 +20,7 @@ public class FjwtController {
     private final UserDetailsService userDetailsService;
     private final FjwtTokenUtil fjwtTokenUtil;
 
-    @RequestMapping(value = "${fjwt.url:/authenticate}", method = RequestMethod.POST)
+    @RequestMapping(value = "${fjwt.endpoint:/authenticate}", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody FjwtRequest request) throws Exception {
 
         try {
