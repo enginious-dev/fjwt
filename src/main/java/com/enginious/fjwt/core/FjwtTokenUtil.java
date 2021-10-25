@@ -2,9 +2,8 @@ package com.enginious.fjwt.core;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,17 +14,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class FjwtTokenUtil implements Serializable {
 
-    private final int ttl;
-    private final String secret;
-    private final SignatureAlgorithm algorithm;
-
-    public FjwtTokenUtil(@Value("${fjwt.ttl:3600}") int ttl, @Value("${fjwt.secret:secret}") String secret, @Value("${fjwt.algorithm:HS512}") SignatureAlgorithm algorithm) {
-        this.ttl = ttl;
-        this.secret = secret;
-        this.algorithm = algorithm;
-    }
+    private final FjwtConfig fjwtConfig;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -40,7 +32,7 @@ public class FjwtTokenUtil implements Serializable {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(fjwtConfig.getSecret()).parseClaimsJws(token).getBody();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
@@ -62,8 +54,8 @@ public class FjwtTokenUtil implements Serializable {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(now)
-                .setExpiration(DateUtils.addSeconds(new Date(), ttl))
-                .signWith(algorithm, secret)
+                .setExpiration(DateUtils.addSeconds(new Date(), fjwtConfig.getTtl()))
+                .signWith(fjwtConfig.getAlgorithm(), fjwtConfig.getSecret())
                 .compact();
     }
 }

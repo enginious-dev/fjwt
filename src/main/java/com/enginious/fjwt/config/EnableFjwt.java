@@ -1,6 +1,5 @@
 package com.enginious.fjwt.config;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;
