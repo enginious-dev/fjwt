@@ -34,7 +34,9 @@ pipeline {
                     pom = readMavenPom file: "pom.xml";
                     jar = "target/${pom.artifactId}-${pom.version}.${pom.packaging}";
                     sources = "target/${pom.artifactId}-${pom.version}.${pom.packaging}-sources";
-                    if(fileExists jar && fileExists sources) {
+                    jarExists = fileExists jar;
+                    sourcesExists = fileExists sources;
+                    if(jarExists && sourcesExists) {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         if(!env.CHANGE_ID && ((BRANCH == "master" && !pom.version.contains("SNAPSHOT")) || (BRANCH != "master" && pom.version.contains("SNAPSHOT")))){
                             nexusArtifactUploader(
