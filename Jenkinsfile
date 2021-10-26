@@ -32,12 +32,9 @@ pipeline {
             steps {
                 script {
                     pom = readMavenPom file: "pom.xml";
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
-                    artifactPath = filesByGlob[0].path;
-                    artifactExists = fileExists artifactPath;
-
-                    if(artifactExists) {
+                    jar = "target/${pom.artifactId}-${pom.version}.${pom.packaging}";
+                    sources = "target/${pom.artifactId}-${pom.version}.${pom.packaging}-sources";
+                    if(fileExists jar && fileExists sources) {
                         echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         if(!env.CHANGE_ID && ((BRANCH == "master" && !pom.version.contains("SNAPSHOT")) || (BRANCH != "master" && pom.version.contains("SNAPSHOT")))){
                             nexusArtifactUploader(
@@ -51,7 +48,11 @@ pipeline {
                                                         artifacts: [
                                                             [artifactId: pom.artifactId,
                                                             classifier: '',
-                                                            file: artifactPath,
+                                                            file: jar,
+                                                            type: pom.packaging],
+                                                            [artifactId: pom.artifactId,
+                                                            classifier: 'sources',
+                                                            file: sources,
                                                             type: pom.packaging],
                                                             [artifactId: pom.artifactId,
                                                             classifier: '',
