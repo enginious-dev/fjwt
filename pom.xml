@@ -6,7 +6,7 @@
 
     <groupId>com.enginious</groupId>
     <artifactId>fjwt</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <dependencyManagement>
         <dependencies>
@@ -19,6 +19,13 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>enginious-group</id>
+            <url>https://nexus.enginious-dev.com/repository/group/</url>
+        </repository>
+    </repositories>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
