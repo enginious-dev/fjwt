@@ -33,7 +33,7 @@ pipeline {
                 script {
                     pom = readMavenPom file: "pom.xml";
                     jar = "target/${pom.artifactId}-${pom.version}.${pom.packaging}";
-                    sources = "target/${pom.artifactId}-${pom.version}.${pom.packaging}-sources";
+                    sources = "target/${pom.artifactId}-${pom.version}-sources.${pom.packaging}";
                     jarExists = fileExists jar;
                     sourcesExists = fileExists sources;
                     if(jarExists && sourcesExists) {
@@ -67,7 +67,12 @@ pipeline {
                             Utils.markStageSkippedForConditional("nexus publish")
                         }
                     } else {
-                        error "*** File: ${artifactPath}, could not be found";
+                        if(!jarExists) {
+                            error "*** File: ${jar}, could not be found";
+                        }
+                        if(!sourcesExists) {
+                            error "*** File: ${sources}, could not be found";
+                        }
                     }
                 }
             }
