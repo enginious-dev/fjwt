@@ -37,7 +37,7 @@ pipeline {
                     jarExists = fileExists jar;
                     sourcesExists = fileExists sources;
                     if(jarExists && sourcesExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
+                        echo "*** Artifact: ${pom.artifactId}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         if(!env.CHANGE_ID && ((BRANCH == "master" && !pom.version.contains("SNAPSHOT")) || (BRANCH != "master" && pom.version.contains("SNAPSHOT")))){
                             nexusArtifactUploader(
                                                         nexusVersion: NEXUS_VERSION,
