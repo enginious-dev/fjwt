@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -29,25 +30,14 @@ import java.util.stream.Stream;
 public class FjwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final FjwtEntryPoint fjwtEntryPoint;
+    private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
     private final FjwtRequestFilter fjwtRequestFilter;
     private final FjwtConfig fjwtConfig;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(PasswordEncoder.class)
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(UserDetailsService.class)
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        return s -> new User(s, passwordEncoder.encode(s), Collections.emptyList());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Bean
