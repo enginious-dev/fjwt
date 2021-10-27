@@ -18,6 +18,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+/**
+ * Fjwt web security configuration
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,17 +33,26 @@ public class FjwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final FjwtRequestFilter fjwtRequestFilter;
     private final FjwtConfig fjwtConfig;
 
+    /**
+     * {@inheritDoc}
+     */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity

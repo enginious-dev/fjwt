@@ -19,12 +19,23 @@ import java.util.Collections;
 @Configuration
 public class FjwtSecurityConfig {
 
+    /**
+     * register the default {@link PasswordEncoder}
+     *
+     * @return the default password encoder bean
+     */
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * register the default {@link UserDetailsService}
+     *
+     * @param passwordEncoder the password encoder
+     * @return the default user details service bean
+     */
     @Bean
     @ConditionalOnMissingBean(UserDetailsService.class)
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
