@@ -145,7 +145,24 @@
                     <release>${java.version}</release>
                 </configuration>
             </plugin>
-<!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin &ndash;&gt;-->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                </configuration>
+            </plugin>
+            <!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin &ndash;&gt;-->
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-source-plugin</artifactId>-->
