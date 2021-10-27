@@ -23,8 +23,15 @@ public class FjwtController {
     private final UserDetailsService userDetailsService;
     private final FjwtTokenUtil fjwtTokenUtil;
 
+    /**
+     * Authentication endpoint, you can set this path through {@link FjwtConfig#endpoint}.
+     *
+     * @param request a {@link FjwtRequest}
+     * @return the authentication response which is {@link HttpStatus#OK} in case of success and
+     * {@link HttpStatus#UNAUTHORIZED} in case of failure.
+     */
     @RequestMapping(value = "${fjwt.endpoint:/authenticate}", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody FjwtRequest request) throws Exception {
+    public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));

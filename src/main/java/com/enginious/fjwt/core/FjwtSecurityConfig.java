@@ -10,6 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 
+/**
+ * Provides {@link PasswordEncoder} and/or {@link UserDetailsService} beans they are missing.
+ * The default for {@link PasswordEncoder} is {@link BCryptPasswordEncoder}, while for the
+ * {@link UserDetailsService} is a service that always returns a user with username and password
+ * equal to the username passed.
+ */
 @Configuration
 public class FjwtSecurityConfig {
 

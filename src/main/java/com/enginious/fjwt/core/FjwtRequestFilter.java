@@ -19,6 +19,10 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Check if a token is supplied in request and its validity. If a valid token is found the authentication is added
+ * in the {@link org.springframework.security.core.context.SecurityContext}.
+ */
 @Component
 @RequiredArgsConstructor
 public class FjwtRequestFilter extends OncePerRequestFilter {

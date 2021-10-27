@@ -13,21 +13,57 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Jwt token utilities
+ */
 @Component
 @RequiredArgsConstructor
 public class FjwtTokenUtil implements Serializable {
 
     private final FjwtConfig fjwtConfig;
 
+    /**
+     * Parse token and return the username
+     *
+     * @param token the token
+     * @return the username
+     */
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    /**
+     * Parse token and return the expiration date
+     *
+     * @param token the token
+     * @return the token expiration date
+     */
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    /**
+     * Validate a token
+     *
+     * @param token       the token
+     * @param userDetails the user detail
+     * @return true if the token has not expired and is congruent with the user provided, false otherwise
+     */
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        return (getUsernameFromToken(token).equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    /**
+     * Generates a new token
+     *
+     * @param userDetails the user detail
+     * @return a new token
+     */
+    public String generateToken(UserDetails userDetails) {
+        return doGenerateToken(new HashMap<>(), userDetails.getUsername());
+    }
+
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         return claimsResolver.apply(getAllClaimsFromToken(token));
     }
 
@@ -35,16 +71,8 @@ public class FjwtTokenUtil implements Serializable {
         return Jwts.parser().setSigningKey(fjwtConfig.getSecret()).parseClaimsJws(token).getBody();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        return (getUsernameFromToken(token).equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
     private Boolean isTokenExpired(String token) {
         return getExpirationDateFromToken(token).before(new Date());
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return doGenerateToken(new HashMap<>(), userDetails.getUsername());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {

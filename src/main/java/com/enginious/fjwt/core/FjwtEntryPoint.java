@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * See {@link AuthenticationEntryPoint}
+ */
 @Component
 public class FjwtEntryPoint implements AuthenticationEntryPoint {
 

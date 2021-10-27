@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * &#064;EnableFjwt
  * &#064;Configuration
  * public class MySecurityConfiguration{
- * ...
+ *     ...
  * }
  * </pre>
  * or
@@ -23,12 +23,13 @@ import java.lang.annotation.Target;
  * &#064;EnableFjwt
  * &#064;SpringBootApplication
  * public class MySpringBootApplication{
- * ...
+ *     ...
  * }
  * </pre>
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import(FjwtConfig.class)
+@Import(Fjwt.class)
 public @interface EnableFjwt {
 }

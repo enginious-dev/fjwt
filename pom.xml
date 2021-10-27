@@ -45,6 +45,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-configuration-processor -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -162,20 +167,6 @@
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                 </configuration>
             </plugin>
-            <!--            &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-source-plugin &ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-source-plugin</artifactId>-->
-<!--                <version>3.2.1</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>attach-sources</id>-->
-<!--                        <goals>-->
-<!--                            <goal>jar-no-fork</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 </project>
