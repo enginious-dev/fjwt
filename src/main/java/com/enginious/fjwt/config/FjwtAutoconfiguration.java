@@ -7,13 +7,12 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 
 /**
- * Fjwt configuration, use {@link EnableFjwt} instead of import this class
- * with {@link org.springframework.context.annotation.Import}.
+ * Fjwt auto configuration
  */
 @Slf4j
 @Configuration
 @ComponentScan(basePackages = "com.enginious.fjwt.core")
-public class Fjwt {
+public class FjwtAutoconfiguration {
 
     @PostConstruct
     protected void init() {
