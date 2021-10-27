@@ -11,6 +11,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Jwt authentication controller
+ */
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
