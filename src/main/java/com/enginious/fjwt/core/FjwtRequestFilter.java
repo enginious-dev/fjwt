@@ -1,6 +1,6 @@
 package com.enginious.fjwt.core;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,10 +49,8 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
 
       try {
         username = fjwtTokenUtil.getUsernameFromToken(jwtToken);
-      } catch (IllegalArgumentException e) {
-        logger.warn("Unable to get JWT token");
-      } catch (ExpiredJwtException e) {
-        logger.warn("JWT token expired");
+      } catch (JwtException | IllegalArgumentException e) {
+        logger.warn("exception occurred while parsing JWT token: ", e);
       }
 
       if (StringUtils.isNotBlank(username)
