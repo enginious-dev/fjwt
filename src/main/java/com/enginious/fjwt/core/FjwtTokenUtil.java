@@ -1,14 +1,11 @@
 package com.enginious.fjwt.core;
 
-import io.jsonwebtoken.*;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.spec.SecretKeySpec;
-import java.io.Serializable;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -17,118 +14,131 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
-/**
- * Jwt token utilities
- */
+/** Jwt token utilities */
 @Component
 @RequiredArgsConstructor
-public class FjwtTokenUtil implements Serializable {
+public class FjwtTokenUtil {
 
-    /**
-     * The clock
-     */
-    private final Clock clock;
+  /** The clock */
+  private final Clock clock;
 
-    /**
-     * Fjwt configuration
-     */
-    private final FjwtConfig fjwtConfig;
+  /** Fjwt configuration */
+  private final FjwtConfig fjwtConfig;
 
-    /**
-     * Parse token and return the username
-     *
-     * @param token the token
-     * @return the username
-     * @throws MalformedJwtException    if the specified JWT was incorrectly constructed (and therefore invalid).
-     *                                  Invalid
-     *                                  JWTs should not be trusted and should be discarded.
-     * @throws SignatureException       if a JWS signature was discovered, but could not be verified. JWTs that fail
-     *                                  signature validation should not be trusted and should be discarded.
-     * @throws ExpiredJwtException      if the specified JWT is a Claims JWT and the Claims has an expiration time
-     *                                  before the time this method is invoked.
-     * @throws IllegalArgumentException if the specified string is {@code null} or empty or only whitespace.
-     */
-    public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+  /**
+   * Parse token and return the username
+   *
+   * @param token the token
+   * @return the username
+   * @throws MalformedJwtException if the specified JWT was incorrectly constructed (and therefore
+   *     invalid). Invalid JWTs should not be trusted and should be discarded.
+   * @throws SignatureException if a JWS signature was discovered, but could not be verified. JWTs
+   *     that fail signature validation should not be trusted and should be discarded.
+   * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an
+   *     expiration time before the time this method is invoked.
+   * @throws IllegalArgumentException if the specified string is {@code null} or empty or only
+   *     whitespace.
+   */
+  public String getUsernameFromToken(String token) {
+    return getClaimFromToken(token, Claims::getSubject);
+  }
+
+  /**
+   * Parse token and return the expiration date
+   *
+   * @param token the token
+   * @return the token expiration date
+   * @throws MalformedJwtException if the specified JWT was incorrectly constructed (and therefore
+   *     invalid). Invalid JWTs should not be trusted and should be discarded.
+   * @throws SignatureException if a JWS signature was discovered, but could not be verified. JWTs
+   *     that fail signature validation should not be trusted and should be discarded.
+   * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an
+   *     expiration time before the time this method is invoked.
+   * @throws IllegalArgumentException if the specified string is {@code null} or empty or only
+   *     whitespace.
+   */
+  public Date getExpirationDateFromToken(String token) {
+    return getClaimFromToken(token, Claims::getExpiration);
+  }
+
+  /**
+   * Validate a token
+   *
+   * @param token the token
+   * @param userDetails the user detail
+   * @throws MalformedJwtException if the specified JWT was incorrectly constructed (and therefore
+   *     invalid). Invalid JWTs should not be trusted and should be discarded.
+   * @throws SignatureException if a JWS signature was discovered, but could not be verified. JWTs
+   *     that fail signature validation should not be trusted and should be discarded.
+   * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an
+   *     expiration time before the time this method is invoked.
+   * @throws IllegalArgumentException if the specified string is {@code null} or empty or only
+   *     whitespace.
+   */
+  public void validateToken(String token, UserDetails userDetails) {
+    String usernameFromToken = getUsernameFromToken(token);
+    if (!StringUtils.equals(usernameFromToken, userDetails.getUsername())) {
+      throw new JwtException(
+          String.format(
+              "username from JWT [%s] is different than expected [%s].",
+              usernameFromToken, userDetails.getUsername()));
     }
+  }
 
-    /**
-     * Parse token and return the expiration date
-     *
-     * @param token the token
-     * @return the token expiration date
-     * @throws MalformedJwtException    if the specified JWT was incorrectly constructed (and therefore invalid).
-     *                                  Invalid
-     *                                  JWTs should not be trusted and should be discarded.
-     * @throws SignatureException       if a JWS signature was discovered, but could not be verified. JWTs that fail
-     *                                  signature validation should not be trusted and should be discarded.
-     * @throws ExpiredJwtException      if the specified JWT is a Claims JWT and the Claims has an expiration time
-     *                                  before the time this method is invoked.
-     * @throws IllegalArgumentException if the specified string is {@code null} or empty or only whitespace.
-     */
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
+  /**
+   * Generates a new token
+   *
+   * @param userDetails the user detail
+   * @return a new token
+   */
+  public String generateToken(UserDetails userDetails) {
+    return doGenerateToken(new HashMap<>(), userDetails.getUsername());
+  }
 
-    /**
-     * Validate a token
-     *
-     * @param token       the token
-     * @param userDetails the user detail
-     * @throws MalformedJwtException    if the specified JWT was incorrectly constructed (and therefore invalid).
-     *                                  Invalid
-     *                                  JWTs should not be trusted and should be discarded.
-     * @throws SignatureException       if a JWS signature was discovered, but could not be verified. JWTs that fail
-     *                                  signature validation should not be trusted and should be discarded.
-     * @throws ExpiredJwtException      if the specified JWT is a Claims JWT and the Claims has an expiration time
-     *                                  before the time this method is invoked.
-     * @throws IllegalArgumentException if the specified string is {@code null} or empty or only whitespace.
-     */
-    public void validateToken(String token, UserDetails userDetails) {
-        String usernameFromToken = getUsernameFromToken(token);
-        if (!StringUtils.equals(usernameFromToken, userDetails.getUsername())) {
-            throw new JwtException(String.format("username from JWT [%s] is different than expected [%s].", usernameFromToken, userDetails.getUsername()));
-        }
-    }
+  private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    return claimsResolver.apply(getAllClaimsFromToken(token));
+  }
 
-    /**
-     * Generates a new token
-     *
-     * @param userDetails the user detail
-     * @return a new token
-     */
-    public String generateToken(UserDetails userDetails) {
-        return doGenerateToken(new HashMap<>(), userDetails.getUsername());
-    }
+  private Claims getAllClaimsFromToken(String token) {
+    return Jwts.parser()
+        .setSigningKey(
+            new SecretKeySpec(
+                fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
+                fjwtConfig.getAlgorithm().getJcaName()))
+        .parseClaimsJws(token)
+        .getBody();
+  }
 
-    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        return claimsResolver.apply(getAllClaimsFromToken(token));
-    }
+  private String doGenerateToken(Map<String, Object> claims, String subject) {
+    Date now = current();
+    return Jwts.builder()
+        .setHeaderParam("typ", "JWT")
+        .setClaims(claims)
+        .setSubject(subject)
+        .setIssuedAt(now)
+        .setExpiration(DateUtils.addSeconds(now, fjwtConfig.getTtl()))
+        .signWith(
+            fjwtConfig.getAlgorithm(),
+            new SecretKeySpec(
+                fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
+                fjwtConfig.getAlgorithm().getJcaName()))
+        .compact();
+  }
 
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(new SecretKeySpec(fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8), fjwtConfig.getAlgorithm().getJcaName())).parseClaimsJws(token).getBody();
-    }
-
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        Date now = current();
-        return Jwts
-                .builder()
-                .setHeaderParam("typ", "JWT")
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(now)
-                .setExpiration(DateUtils.addSeconds(now, fjwtConfig.getTtl()))
-                .signWith(fjwtConfig.getAlgorithm(), new SecretKeySpec(fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8), fjwtConfig.getAlgorithm().getJcaName()))
-                .compact();
-    }
-
-    private Date current() {
-        return Date.from(
-                LocalDateTime
-                        .now(clock)
-                        .atZone(StringUtils.isNotBlank(fjwtConfig.getZoneId()) ?
-                                ZoneId.of(fjwtConfig.getZoneId()) :
-                                ZoneId.systemDefault()).toInstant());
-    }
+  private Date current() {
+    return Date.from(
+        LocalDateTime.now(clock)
+            .atZone(
+                StringUtils.isNotBlank(fjwtConfig.getZoneId())
+                    ? ZoneId.of(fjwtConfig.getZoneId())
+                    : ZoneId.systemDefault())
+            .toInstant());
+  }
 }

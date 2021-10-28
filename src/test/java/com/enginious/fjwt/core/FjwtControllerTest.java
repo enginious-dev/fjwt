@@ -1,7 +1,11 @@
 package com.enginious.fjwt.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+
 import com.enginious.fjwt.dto.FjwtRequest;
 import com.enginious.fjwt.dto.FjwtResponse;
+import java.util.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,71 +22,55 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-
 @ExtendWith(MockitoExtension.class)
 class FjwtControllerTest {
 
-    @InjectMocks
-    private FjwtController target;
+  @InjectMocks private FjwtController target;
 
-    @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private UserDetailsService userDetailsService;
-    @Mock
-    private FjwtTokenUtil fjwtTokenUtil;
+  @Mock private AuthenticationManager authenticationManager;
+  @Mock private UserDetailsService userDetailsService;
+  @Mock private FjwtTokenUtil fjwtTokenUtil;
 
-    @Test
-    void whenCreateAuthenticationTokenAndAuthenticationManagerDoesNotThrowThenShouldReturn200ResponseWithToken() {
+  @Test
+  void
+      whenCreateAuthenticationTokenAndAuthenticationManagerDoesNotThrowThenShouldReturn200ResponseWithToken() {
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken("username", "password");
-        User user = new User("username", (new BCryptPasswordEncoder()).encode("password"), Collections.emptyList());
+    Authentication authentication = new UsernamePasswordAuthenticationToken("username", "password");
+    User user =
+        new User(
+            "username", (new BCryptPasswordEncoder()).encode("password"), Collections.emptyList());
 
-        given(authenticationManager.authenticate(authentication))
-                .willReturn(authentication);
+    given(authenticationManager.authenticate(authentication)).willReturn(authentication);
 
-        given(userDetailsService.loadUserByUsername("username"))
-                .willReturn(user);
+    given(userDetailsService.loadUserByUsername("username")).willReturn(user);
 
-        given(fjwtTokenUtil.generateToken(user))
-                .willReturn("token");
+    given(fjwtTokenUtil.generateToken(user)).willReturn("token");
 
-        ResponseEntity<FjwtResponse> authenticationToken = target.createAuthenticationToken(
-                FjwtRequest
-                        .builder()
-                        .username("username")
-                        .password("password")
-                        .build()
-        );
+    ResponseEntity<FjwtResponse> authenticationToken =
+        target.createAuthenticationToken(
+            FjwtRequest.builder().username("username").password("password").build());
 
-        assertThat(authenticationToken).isNotNull();
-        assertThat(authenticationToken.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(authenticationToken.getBody()).isNotNull();
-        assertThat(authenticationToken.getBody().getToken()).isEqualTo("token");
-    }
+    assertThat(authenticationToken).isNotNull();
+    assertThat(authenticationToken.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(authenticationToken.getBody()).isNotNull();
+    assertThat(authenticationToken.getBody().getToken()).isEqualTo("token");
+  }
 
-    @Test
-    void whenCreateAuthenticationTokenAndAuthenticationManagerDoesNotThrowThenShouldReturn401Response() {
+  @Test
+  void
+      whenCreateAuthenticationTokenAndAuthenticationManagerDoesNotThrowThenShouldReturn401Response() {
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken("username", "password");
+    Authentication authentication = new UsernamePasswordAuthenticationToken("username", "password");
 
-        given(authenticationManager.authenticate(authentication))
-                .willThrow(new BadCredentialsException(StringUtils.EMPTY));
+    given(authenticationManager.authenticate(authentication))
+        .willThrow(new BadCredentialsException(StringUtils.EMPTY));
 
-        ResponseEntity<FjwtResponse> authenticationToken = target.createAuthenticationToken(
-                FjwtRequest
-                        .builder()
-                        .username("username")
-                        .password("password")
-                        .build()
-        );
+    ResponseEntity<FjwtResponse> authenticationToken =
+        target.createAuthenticationToken(
+            FjwtRequest.builder().username("username").password("password").build());
 
-        assertThat(authenticationToken).isNotNull();
-        assertThat(authenticationToken.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(authenticationToken.getBody()).isNull();
-    }
+    assertThat(authenticationToken).isNotNull();
+    assertThat(authenticationToken.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertThat(authenticationToken.getBody()).isNull();
+  }
 }

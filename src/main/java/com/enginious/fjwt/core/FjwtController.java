@@ -9,43 +9,43 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Jwt authentication controller
- */
+/** Jwt authentication controller */
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class FjwtController {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
-    private final FjwtTokenUtil fjwtTokenUtil;
+  private final AuthenticationManager authenticationManager;
+  private final UserDetailsService userDetailsService;
+  private final FjwtTokenUtil fjwtTokenUtil;
 
-    /**
-     * Authentication endpoint, you can set this path through {@link FjwtConfig#endpoint}.
-     *
-     * @param request a {@link FjwtRequest}
-     * @return the authentication response which is {@link HttpStatus#OK} in case of success and
-     * {@link HttpStatus#UNAUTHORIZED} in case of failure.
-     */
-    @RequestMapping(value = "${fjwt.endpoint:/authenticate}", method = RequestMethod.POST)
-    public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
+  /**
+   * Authentication endpoint, you can set this path through {@link FjwtConfig#endpoint}.
+   *
+   * @param request a {@link FjwtRequest}
+   * @return the authentication response which is {@link HttpStatus#OK} in case of success and
+   *     {@link HttpStatus#UNAUTHORIZED} in case of failure.
+   */
+  @PostMapping("${fjwt.endpoint:/authenticate}")
+  public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
 
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-            return ResponseEntity
-                    .ok(
-                            FjwtResponse
-                                    .builder()
-                                    .token(fjwtTokenUtil.generateToken(userDetailsService.loadUserByUsername(request.getUsername())))
-                                    .build());
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+      return ResponseEntity.ok(
+          FjwtResponse.builder()
+              .token(
+                  fjwtTokenUtil.generateToken(
+                      userDetailsService.loadUserByUsername(request.getUsername())))
+              .build());
 
-        } catch (AuthenticationException e) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .build();
-        }
+    } catch (AuthenticationException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+  }
 }
