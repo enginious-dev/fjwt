@@ -6,7 +6,7 @@
 
   <groupId>com.enginious</groupId>
   <artifactId>fjwt</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <name>fjwt</name>
   <description>fast and simple JWT authentication library</description>
