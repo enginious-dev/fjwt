@@ -1,7 +1,12 @@
 package com.enginious.fjwt.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/** The authentication response */
 @Getter
 @Setter
 @Builder
@@ -9,5 +14,6 @@ import lombok.*;
 @AllArgsConstructor
 public class FjwtResponse {
 
-    private String token;
+  /** The jwt token */
+  private String token;
 }

@@ -32,13 +32,12 @@ pipeline {
             steps {
                 script {
                     pom = readMavenPom file: "pom.xml";
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length} ${filesByGlob[0].lastModified}"
-                    artifactPath = filesByGlob[0].path;
-                    artifactExists = fileExists artifactPath;
-
-                    if(artifactExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
+                    jar = "target/${pom.artifactId}-${pom.version}.${pom.packaging}";
+                    sources = "target/${pom.artifactId}-${pom.version}-sources.${pom.packaging}";
+                    jarExists = fileExists jar;
+                    sourcesExists = fileExists sources;
+                    if(jarExists && sourcesExists) {
+                        echo "*** Artifact: ${pom.artifactId}, group: ${pom.groupId}, packaging: ${pom.packaging}, version ${pom.version}";
                         if(!env.CHANGE_ID && ((BRANCH == "master" && !pom.version.contains("SNAPSHOT")) || (BRANCH != "master" && pom.version.contains("SNAPSHOT")))){
                             nexusArtifactUploader(
                                                         nexusVersion: NEXUS_VERSION,
@@ -51,7 +50,11 @@ pipeline {
                                                         artifacts: [
                                                             [artifactId: pom.artifactId,
                                                             classifier: '',
-                                                            file: artifactPath,
+                                                            file: jar,
+                                                            type: pom.packaging],
+                                                            [artifactId: pom.artifactId,
+                                                            classifier: 'sources',
+                                                            file: sources,
                                                             type: pom.packaging],
                                                             [artifactId: pom.artifactId,
                                                             classifier: '',
@@ -64,7 +67,12 @@ pipeline {
                             Utils.markStageSkippedForConditional("nexus publish")
                         }
                     } else {
-                        error "*** File: ${artifactPath}, could not be found";
+                        if(!jarExists) {
+                            error "*** File: ${jar}, could not be found";
+                        }
+                        if(!sourcesExists) {
+                            error "*** File: ${sources}, could not be found";
+                        }
                     }
                 }
             }

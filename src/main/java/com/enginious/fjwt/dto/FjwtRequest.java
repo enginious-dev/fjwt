@@ -1,7 +1,12 @@
 package com.enginious.fjwt.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+/** The authentication request */
 @Setter
 @Getter
 @Builder
@@ -9,6 +14,9 @@ import lombok.*;
 @AllArgsConstructor
 public class FjwtRequest {
 
-    private String username;
-    private String password;
+  /** The username */
+  private String username;
+
+  /** The password */
+  private String password;
 }
