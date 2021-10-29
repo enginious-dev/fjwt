@@ -29,9 +29,18 @@ library by default provides you the `BCryptPasswordEncoder`.
 
 ## How to test?
 
-If you want to test add this library to the classpath, configure it as shown above and start the
-application, then do `POST` to the path of your configured (maybe the default one could be a good
-choice) with the following body:
+If you want to test add this the dependency to you `pom.xml`:
+
+```
+<dependency>
+    <groupId>com.enginious-dev</groupId>
+    <artifactId>fjwt</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+configure it as shown above and start the application, then do `POST` to the path of your
+configured (maybe the default one could be a good choice) with the following body:
 
 ```
 {
@@ -51,4 +60,4 @@ to receive a response like:
 from that moment and until the token is valid you will be able to access the various resources of
 your application that require authentication by adding the `Authorization` key in the request header
 with the `Bearer ` value concatenated within the obtained token (for
-example `Bearer some- generated-jwt-token`).
+example `Bearer some-generated-jwt-token`).
