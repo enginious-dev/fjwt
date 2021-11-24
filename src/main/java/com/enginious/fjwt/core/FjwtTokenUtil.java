@@ -11,7 +11,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,6 +30,9 @@ public class FjwtTokenUtil {
 
   /** Fjwt configuration */
   private final FjwtConfig fjwtConfig;
+
+  /** Claims extractor chain */
+  private final ClaimsExtractorChain claimsExtractor;
 
   /**
    * Parse token and return the username
@@ -99,7 +101,7 @@ public class FjwtTokenUtil {
    * @return a new token
    */
   public String generateToken(UserDetails userDetails) {
-    return doGenerateToken(new HashMap<>(), userDetails.getUsername());
+    return doGenerateToken(claimsExtractor.getClaims(userDetails), userDetails.getUsername());
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {

@@ -2,7 +2,10 @@ package com.enginious.fjwt.core;
 
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,6 +46,18 @@ public class FjwtSecurityConfig {
   @ConditionalOnMissingBean(UserDetailsService.class)
   public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
     return s -> new User(s, passwordEncoder.encode(s), Collections.emptyList());
+  }
+
+  /**
+   * register the default {@link ClaimsExtractorChain}
+   *
+   * @param extractors all registered beans of type {@link ClaimsExtractor}
+   * @return the default claim extractor bean
+   */
+  @Bean
+  @ConditionalOnMissingBean(ClaimsExtractorChain.class)
+  public ClaimsExtractorChain claimsExtractorChain(Optional<List<ClaimsExtractor>> extractors) {
+    return new ClaimsExtractorChain(extractors.orElse(new ArrayList<>()));
   }
 
   /**

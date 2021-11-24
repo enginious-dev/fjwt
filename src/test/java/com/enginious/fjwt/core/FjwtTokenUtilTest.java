@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mockStatic;
 
+import com.enginious.fjwt.core.extractors.AuthoritiesExtractor;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,25 +16,36 @@ import io.jsonwebtoken.impl.DefaultJwtParser;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @ExtendWith(MockitoExtension.class)
 class FjwtTokenUtilTest {
 
-  @InjectMocks private FjwtTokenUtil target;
+  private FjwtTokenUtil target;
 
   @Mock private FjwtConfig fjwtConfig;
 
   @Mock private Clock clock;
+
+  @BeforeEach
+  void setup() {
+    target =
+        new FjwtTokenUtil(
+            clock,
+            fjwtConfig,
+            new ClaimsExtractorChain(Collections.singletonList(new AuthoritiesExtractor())));
+  }
 
   @Test
   void whenGetUsernameFromTokenShouldReturnCorrectUsername() {
@@ -169,7 +181,7 @@ class FjwtTokenUtilTest {
   void whenGenerateTokenShouldReturnToken() {
 
     String token =
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwfQ.PpkOJKaNaNgjkxuxg8VdRllxKRDlFOsdRVosoDiv6NE";
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwLCJhdXRob3JpdGllcyI6WyJhdXRoMSIsImF1dGgyIl19.2MZ-wPeRfrzS84iKXx55V7Hfbu7ti5aBRl-3FF4FLEY";
 
     given(clock.instant()).willReturn(Instant.ofEpochMilli(1635339600000L));
 
@@ -181,7 +193,13 @@ class FjwtTokenUtilTest {
 
     given(fjwtConfig.getTtl()).willReturn(3600);
 
-    assertThat(target.generateToken(new User("username", "password", Collections.emptyList())))
+    assertThat(
+            target.generateToken(
+                new User(
+                    "username",
+                    "password",
+                    Arrays.asList(
+                        new SimpleGrantedAuthority("auth1"), new SimpleGrantedAuthority("auth2")))))
         .isEqualTo(token);
   }
 }
