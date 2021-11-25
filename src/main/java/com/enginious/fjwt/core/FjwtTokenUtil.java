@@ -32,7 +32,7 @@ public class FjwtTokenUtil {
   private final FjwtConfig fjwtConfig;
 
   /** Claims extractor chain */
-  private final ClaimsExtractorChain claimsExtractor;
+  private final ClaimsExtractorChain claimsExtractorChain;
 
   /**
    * Parse token and return the username
@@ -101,7 +101,7 @@ public class FjwtTokenUtil {
    * @return a new token
    */
   public String generateToken(UserDetails userDetails) {
-    return doGenerateToken(claimsExtractor.getClaims(userDetails), userDetails.getUsername());
+    return doGenerateToken(claimsExtractorChain.getClaims(userDetails), userDetails.getUsername());
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
