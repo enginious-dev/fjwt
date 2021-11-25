@@ -49,15 +49,27 @@ public class FjwtSecurityConfig {
   }
 
   /**
-   * register the default {@link ClaimsExtractorChain}
+   * register the default {@link FjwtClaimsExtractorChain}
    *
-   * @param extractors all registered beans of type {@link ClaimsExtractor}
+   * @param extractors all registered beans of type {@link FjwtClaimsExtractor}
    * @return the default claim extractor bean
    */
   @Bean
-  @ConditionalOnMissingBean(ClaimsExtractorChain.class)
-  public ClaimsExtractorChain claimsExtractorChain(Optional<List<ClaimsExtractor>> extractors) {
-    return new ClaimsExtractorChain(extractors.orElse(new ArrayList<>()));
+  @ConditionalOnMissingBean(FjwtClaimsExtractorChain.class)
+  public FjwtClaimsExtractorChain claimsExtractorChain(
+      Optional<List<FjwtClaimsExtractor>> extractors) {
+    return new FjwtClaimsExtractorChain(extractors.orElse(new ArrayList<>()));
+  }
+
+  /**
+   * register the default {@link FjwtUserDetailsBuilderFactory}
+   *
+   * @return the default user details builder factory bean
+   */
+  @Bean
+  @ConditionalOnMissingBean(FjwtUserDetailsBuilderFactory.class)
+  public FjwtUserDetailsBuilderFactory userDetailsBuilderFactory() {
+    return FjwtSimpleUserDetailsBuilder::new;
   }
 
   /**

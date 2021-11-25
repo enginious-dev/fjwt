@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,11 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class FjwtController {
 
   private final AuthenticationManager authenticationManager;
-  private final UserDetailsService userDetailsService;
   private final FjwtTokenUtil fjwtTokenUtil;
 
   /**
-   * Authentication endpoint, you can set this path through {@link FjwtConfig#endpoint}.
+   * Authentication endpoint, you can set this path through {@link FjwtConfig#getEndpoint()}.
    *
    * @param request a {@link FjwtRequest}
    * @return the authentication response which is {@link HttpStatus#OK} in case of success and
@@ -35,13 +34,15 @@ public class FjwtController {
   public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
 
     try {
-      authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
       return ResponseEntity.ok(
           FjwtResponse.builder()
               .token(
                   fjwtTokenUtil.generateToken(
-                      userDetailsService.loadUserByUsername(request.getUsername())))
+                      (UserDetails)
+                          (authenticationManager.authenticate(
+                                  new UsernamePasswordAuthenticationToken(
+                                      request.getUsername(), request.getPassword())))
+                              .getPrincipal()))
               .build());
 
     } catch (AuthenticationException e) {

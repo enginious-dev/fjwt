@@ -2,7 +2,6 @@ package com.enginious.fjwt.core;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -32,7 +31,10 @@ public class FjwtTokenUtil {
   private final FjwtConfig fjwtConfig;
 
   /** Claims extractor chain */
-  private final ClaimsExtractorChain claimsExtractorChain;
+  private final FjwtClaimsExtractorChain claimsExtractorChain;
+
+  /** Claims extractor chain */
+  private final FjwtUserDetailsBuilderFactory userDetailsBuilderFactory;
 
   /**
    * Parse token and return the username
@@ -71,30 +73,6 @@ public class FjwtTokenUtil {
   }
 
   /**
-   * Validate a token
-   *
-   * @param token the token
-   * @param userDetails the user detail
-   * @throws MalformedJwtException if the specified JWT was incorrectly constructed (and therefore
-   *     invalid). Invalid JWTs should not be trusted and should be discarded.
-   * @throws SignatureException if a JWS signature was discovered, but could not be verified. JWTs
-   *     that fail signature validation should not be trusted and should be discarded.
-   * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an
-   *     expiration time before the time this method is invoked.
-   * @throws IllegalArgumentException if the specified string is {@code null} or empty or only
-   *     whitespace.
-   */
-  public void validateToken(String token, UserDetails userDetails) {
-    String usernameFromToken = getUsernameFromToken(token);
-    if (!StringUtils.equals(usernameFromToken, userDetails.getUsername())) {
-      throw new JwtException(
-          String.format(
-              "username from JWT [%s] is different than expected [%s].",
-              usernameFromToken, userDetails.getUsername()));
-    }
-  }
-
-  /**
    * Generates a new token
    *
    * @param userDetails the user detail
@@ -102,6 +80,19 @@ public class FjwtTokenUtil {
    */
   public String generateToken(UserDetails userDetails) {
     return doGenerateToken(claimsExtractorChain.getClaims(userDetails), userDetails.getUsername());
+  }
+
+  /**
+   * Reconstruct user from token
+   *
+   * @param token the token
+   * @return the reconstructed user
+   */
+  public UserDetails getUserFromToken(String token) {
+    Claims claims = getAllClaimsFromToken(token);
+    FjwtAbstractUserDetailsBuilder builder = userDetailsBuilderFactory.apply(claims.getSubject());
+    claimsExtractorChain.addData(claims, builder);
+    return builder.build();
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
