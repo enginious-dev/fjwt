@@ -21,6 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * default for {@link PasswordEncoder} is {@link BCryptPasswordEncoder}, while for the {@link
  * UserDetailsService} is a service that always returns a user with username and password equal to
  * the username passed.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
  */
 @Configuration
 public class FjwtSecurityConfig {

@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 /**
  * The default implementation for {@link FjwtAbstractUserDetailsBuilder} that returns an on the fly
  * built {@link UserDetails} with standard properties.
+ *
+ * @since 1.1.0
+ * @author Giuseppe Milazzo
  */
 public class FjwtSimpleUserDetailsBuilder extends FjwtAbstractUserDetailsBuilder {
 

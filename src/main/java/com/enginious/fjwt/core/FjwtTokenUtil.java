@@ -19,7 +19,12 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-/** Jwt token utilities */
+/**
+ * Jwt token utilities.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Component
 @RequiredArgsConstructor
 public class FjwtTokenUtil {

@@ -14,7 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Jwt authentication controller */
+/**
+ * Jwt authentication controller.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor

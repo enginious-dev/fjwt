@@ -7,11 +7,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Base class for all Fjwt user details builder. In this scope an user details builder it's an
- * object used to build users starting from the claims retrieved from the token. In most cases the
- * default builder {@link FjwtSimpleUserDetailsBuilder} will be enough, but if you need to extend
- * the functionality you can easily implement your own version extending this class and declare a
- * bean of type {@link FjwtUserDetailsBuilderFactory} that supplies your specific implementation.
+ * Base class for all Fjwt user details builder. In this scope a user details builder it's an object
+ * used to build users starting from the claims retrieved from the token. In most cases the default
+ * builder {@link FjwtSimpleUserDetailsBuilder} will be enough, but if you need to extend the
+ * functionality you can easily implement your own version extending this class and declare a bean
+ * of type {@link FjwtUserDetailsBuilderFactory} that supplies your specific implementation.
+ *
+ * @since 1.1.0
+ * @author Giuseppe Milazzo
  */
 @RequiredArgsConstructor
 public abstract class FjwtAbstractUserDetailsBuilder {

@@ -9,7 +9,12 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/** Fjwt configuration parameters */
+/**
+ * Fjwt configuration parameters.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Getter
 @Setter
 @Component

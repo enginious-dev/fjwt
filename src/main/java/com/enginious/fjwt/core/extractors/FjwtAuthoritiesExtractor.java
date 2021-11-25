@@ -12,7 +12,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 
-/** Authorities extractor, adds all authorities to the token */
+/**
+ * Authorities extractor, adds all authorities to the token.
+ *
+ * @since 1.1.0
+ * @author Giuseppe Milazzo
+ */
 public class FjwtAuthoritiesExtractor implements FjwtClaimsExtractor {
 
   /** Authorities key */

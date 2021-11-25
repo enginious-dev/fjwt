@@ -7,7 +7,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-/** See {@link AuthenticationEntryPoint} */
+/**
+ * See {@link AuthenticationEntryPoint}.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Component
 public class FjwtEntryPoint implements AuthenticationEntryPoint {
 

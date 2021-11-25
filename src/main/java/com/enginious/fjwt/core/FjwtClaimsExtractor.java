@@ -3,7 +3,12 @@ package com.enginious.fjwt.core;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/** An element of the token extraction chain. See {@link FjwtClaimsExtractorChain} */
+/**
+ * An element of the token extraction chain. See {@link FjwtClaimsExtractorChain}.
+ *
+ * @since 1.1.0
+ * @author Giuseppe Milazzo
+ */
 public interface FjwtClaimsExtractor {
 
   /**

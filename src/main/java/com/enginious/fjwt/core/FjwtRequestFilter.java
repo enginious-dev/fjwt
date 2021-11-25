@@ -21,6 +21,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * Check if a token is supplied in request and its validity. If a valid token is found the
  * authentication is added in the {@link org.springframework.security.core.context.SecurityContext}.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
  */
 @Component
 @RequiredArgsConstructor

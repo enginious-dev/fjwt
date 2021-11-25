@@ -6,7 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** The authentication response */
+/**
+ * The authentication response.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Getter
 @Setter
 @Builder

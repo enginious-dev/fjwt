@@ -5,7 +5,12 @@ import com.enginious.fjwt.core.FjwtClaimsExtractor;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
-/** UserDetails flags extractor, adds all flag in {@link UserDetails} to the token */
+/**
+ * UserDetails flags extractor, adds all flag in {@link UserDetails} to the token.
+ *
+ * @since 1.1.0
+ * @author Giuseppe Milazzo
+ */
 public class FjwtUserDetailsFlagsExtractor implements FjwtClaimsExtractor {
 
   /** Credential credentials expired flag key */

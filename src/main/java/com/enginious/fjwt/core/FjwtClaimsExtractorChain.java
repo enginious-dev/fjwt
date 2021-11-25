@@ -10,6 +10,9 @@ import org.springframework.util.CollectionUtils;
 /**
  * Represents the extractors chain. When the token is generated all registered extractors will be
  * invoked by adding information to the token.
+ *
+ * @since 1.1.0
+ * @author Giuseppe Milazzo
  */
 @RequiredArgsConstructor
 public class FjwtClaimsExtractorChain {
