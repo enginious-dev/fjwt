@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class FjwtResponseTest {
 
   @Test
-  void testDefaultConstructo() {
+  void testDefaultConstructor() {
 
     FjwtResponse rs = new FjwtResponse();
 

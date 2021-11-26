@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class FjwtRequestTest {
 
   @Test
-  void testDefaultConstructo() {
+  void testDefaultConstructor() {
 
     FjwtRequest rq = new FjwtRequest();
 
