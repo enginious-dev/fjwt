@@ -64,7 +64,7 @@ class FjwtIntegrationTest {
               get("/securedEndpoint")
                   .header(
                       "Authorization",
-                      "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwfQ.PpkOJKaNaNgjkxuxg8VdRllxKRDlFOsdRVosoDiv6NE"))
+                      "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwLCJjcmVkZW50aWFsc0V4cGlyZWQiOmZhbHNlLCJhY2NvdW50RXhwaXJlZCI6ZmFsc2UsImFjY291bnRMb2NrZWQiOmZhbHNlLCJlbmFibGVkIjp0cnVlfQ.Q8VRD8-1KfVchi-xoJrtu3gutIXsJInnhFRBrDMSmvk"))
           .andExpect(status().isOk());
     }
   }

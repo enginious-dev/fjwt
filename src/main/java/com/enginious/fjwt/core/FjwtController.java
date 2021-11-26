@@ -29,7 +29,7 @@ public class FjwtController {
   private final FjwtTokenUtil fjwtTokenUtil;
 
   /**
-   * Authentication endpoint, you can set this path through {@link FjwtConfig#getEndpoint()}.
+   * Authentication endpoint, you can set this path through {@link FjwtConfig#endpoint}.
    *
    * @param request a {@link FjwtRequest}
    * @return the authentication response which is {@link HttpStatus#OK} in case of success and

@@ -7,6 +7,14 @@ import org.junit.jupiter.api.Test;
 class FjwtResponseTest {
 
   @Test
+  void testDefaultConstructo() {
+
+    FjwtResponse rs = new FjwtResponse();
+
+    assertThat(rs.getToken()).isBlank();
+  }
+
+  @Test
   void testAccessor() {
 
     FjwtResponse rs = FjwtResponse.builder().token("token1").build();

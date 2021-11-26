@@ -38,4 +38,7 @@ public class FjwtConfig {
 
   /** Signature algorithm */
   private SignatureAlgorithm algorithm = SignatureAlgorithm.HS512;
+
+  /** Default {@link FjwtClaimsExtractor} enabling flag */
+  private boolean enableDefaultExtractors = true;
 }

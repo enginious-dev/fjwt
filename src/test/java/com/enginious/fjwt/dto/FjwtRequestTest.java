@@ -7,6 +7,15 @@ import org.junit.jupiter.api.Test;
 class FjwtRequestTest {
 
   @Test
+  void testDefaultConstructo() {
+
+    FjwtRequest rq = new FjwtRequest();
+
+    assertThat(rq.getUsername()).isBlank();
+    assertThat(rq.getPassword()).isBlank();
+  }
+
+  @Test
   void testAccessor() {
 
     FjwtRequest rq = FjwtRequest.builder().username("username1").password("password1").build();

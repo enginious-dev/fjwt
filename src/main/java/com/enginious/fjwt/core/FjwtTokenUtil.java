@@ -38,7 +38,7 @@ public class FjwtTokenUtil {
   /** Claims extractor chain */
   private final FjwtClaimsExtractorChain claimsExtractorChain;
 
-  /** Claims extractor chain */
+  /** User details builder factory */
   private final FjwtUserDetailsBuilderFactory userDetailsBuilderFactory;
 
   /**

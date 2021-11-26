@@ -1,5 +1,7 @@
 package com.enginious.fjwt.core;
 
+import com.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
+import com.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.User;
@@ -73,6 +76,36 @@ public class FjwtSecurityConfig {
   @ConditionalOnMissingBean(FjwtUserDetailsBuilderFactory.class)
   public FjwtUserDetailsBuilderFactory userDetailsBuilderFactory() {
     return FjwtSimpleUserDetailsBuilder::new;
+  }
+
+  /**
+   * register a {@link FjwtAuthoritiesExtractor} bean
+   *
+   * @return a {@link FjwtAuthoritiesExtractor} bean
+   */
+  @Bean
+  @ConditionalOnProperty(
+      prefix = "fjwt",
+      name = "enableDefaultExtractors",
+      havingValue = "true",
+      matchIfMissing = true)
+  public FjwtAuthoritiesExtractor authoritiesExtractor() {
+    return new FjwtAuthoritiesExtractor();
+  }
+
+  /**
+   * register a {@link FjwtUserDetailsFlagsExtractor} bean
+   *
+   * @return a {@link FjwtUserDetailsFlagsExtractor} bean
+   */
+  @Bean
+  @ConditionalOnProperty(
+      prefix = "fjwt",
+      name = "enableDefaultExtractors",
+      havingValue = "true",
+      matchIfMissing = true)
+  public FjwtUserDetailsFlagsExtractor userDetailsFlagsExtractor() {
+    return new FjwtUserDetailsFlagsExtractor();
   }
 
   /**

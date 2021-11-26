@@ -226,7 +226,6 @@
         </configuration>
       </plugin>
 
-
       <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
