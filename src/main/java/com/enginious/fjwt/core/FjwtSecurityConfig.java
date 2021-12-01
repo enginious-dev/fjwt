@@ -1,11 +1,17 @@
 package com.enginious.fjwt.core;
 
+import com.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
+import com.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.User;
@@ -18,6 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * default for {@link PasswordEncoder} is {@link BCryptPasswordEncoder}, while for the {@link
  * UserDetailsService} is a service that always returns a user with username and password equal to
  * the username passed.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
  */
 @Configuration
 public class FjwtSecurityConfig {
@@ -43,6 +52,60 @@ public class FjwtSecurityConfig {
   @ConditionalOnMissingBean(UserDetailsService.class)
   public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
     return s -> new User(s, passwordEncoder.encode(s), Collections.emptyList());
+  }
+
+  /**
+   * register the default {@link FjwtClaimsExtractorChain}
+   *
+   * @param extractors all registered beans of type {@link FjwtClaimsExtractor}
+   * @return the default claim extractor bean
+   */
+  @Bean
+  @ConditionalOnMissingBean(FjwtClaimsExtractorChain.class)
+  public FjwtClaimsExtractorChain claimsExtractorChain(
+      Optional<List<FjwtClaimsExtractor>> extractors) {
+    return new FjwtClaimsExtractorChain(extractors.orElse(new ArrayList<>()));
+  }
+
+  /**
+   * register the default {@link FjwtUserDetailsBuilderFactory}
+   *
+   * @return the default user details builder factory bean
+   */
+  @Bean
+  @ConditionalOnMissingBean(FjwtUserDetailsBuilderFactory.class)
+  public FjwtUserDetailsBuilderFactory userDetailsBuilderFactory() {
+    return FjwtSimpleUserDetailsBuilder::new;
+  }
+
+  /**
+   * register a {@link FjwtAuthoritiesExtractor} bean
+   *
+   * @return a {@link FjwtAuthoritiesExtractor} bean
+   */
+  @Bean
+  @ConditionalOnProperty(
+      prefix = "fjwt",
+      name = "enableDefaultExtractors",
+      havingValue = "true",
+      matchIfMissing = true)
+  public FjwtAuthoritiesExtractor authoritiesExtractor() {
+    return new FjwtAuthoritiesExtractor();
+  }
+
+  /**
+   * register a {@link FjwtUserDetailsFlagsExtractor} bean
+   *
+   * @return a {@link FjwtUserDetailsFlagsExtractor} bean
+   */
+  @Bean
+  @ConditionalOnProperty(
+      prefix = "fjwt",
+      name = "enableDefaultExtractors",
+      havingValue = "true",
+      matchIfMissing = true)
+  public FjwtUserDetailsFlagsExtractor userDetailsFlagsExtractor() {
+    return new FjwtUserDetailsFlagsExtractor();
   }
 
   /**

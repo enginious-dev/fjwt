@@ -2,7 +2,6 @@ package com.enginious.fjwt.core;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -11,7 +10,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,7 +19,12 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-/** Jwt token utilities */
+/**
+ * Jwt token utilities.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Component
 @RequiredArgsConstructor
 public class FjwtTokenUtil {
@@ -31,6 +34,12 @@ public class FjwtTokenUtil {
 
   /** Fjwt configuration */
   private final FjwtConfig fjwtConfig;
+
+  /** Claims extractor chain */
+  private final FjwtClaimsExtractorChain claimsExtractorChain;
+
+  /** User details builder factory */
+  private final FjwtUserDetailsBuilderFactory userDetailsBuilderFactory;
 
   /**
    * Parse token and return the username
@@ -69,37 +78,26 @@ public class FjwtTokenUtil {
   }
 
   /**
-   * Validate a token
-   *
-   * @param token the token
-   * @param userDetails the user detail
-   * @throws MalformedJwtException if the specified JWT was incorrectly constructed (and therefore
-   *     invalid). Invalid JWTs should not be trusted and should be discarded.
-   * @throws SignatureException if a JWS signature was discovered, but could not be verified. JWTs
-   *     that fail signature validation should not be trusted and should be discarded.
-   * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an
-   *     expiration time before the time this method is invoked.
-   * @throws IllegalArgumentException if the specified string is {@code null} or empty or only
-   *     whitespace.
-   */
-  public void validateToken(String token, UserDetails userDetails) {
-    String usernameFromToken = getUsernameFromToken(token);
-    if (!StringUtils.equals(usernameFromToken, userDetails.getUsername())) {
-      throw new JwtException(
-          String.format(
-              "username from JWT [%s] is different than expected [%s].",
-              usernameFromToken, userDetails.getUsername()));
-    }
-  }
-
-  /**
    * Generates a new token
    *
    * @param userDetails the user detail
    * @return a new token
    */
   public String generateToken(UserDetails userDetails) {
-    return doGenerateToken(new HashMap<>(), userDetails.getUsername());
+    return doGenerateToken(claimsExtractorChain.getClaims(userDetails), userDetails.getUsername());
+  }
+
+  /**
+   * Reconstruct user from token
+   *
+   * @param token the token
+   * @return the reconstructed user
+   */
+  public UserDetails getUserFromToken(String token) {
+    Claims claims = getAllClaimsFromToken(token);
+    FjwtAbstractUserDetailsBuilder builder = userDetailsBuilderFactory.apply(claims.getSubject());
+    claimsExtractorChain.addData(claims, builder);
+    return builder.build();
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {

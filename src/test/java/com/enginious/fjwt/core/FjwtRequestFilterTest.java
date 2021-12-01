@@ -1,11 +1,7 @@
 package com.enginious.fjwt.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.anyString;
-import static org.mockito.BDDMockito.doNothing;
-import static org.mockito.BDDMockito.doThrow;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mockStatic;
 import static org.mockito.BDDMockito.never;
@@ -13,7 +9,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.times;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import java.util.Collections;
 import javax.servlet.FilterChain;
@@ -35,16 +30,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class FjwtRequestFilterTest {
 
   @InjectMocks private FjwtRequestFilter target;
-
-  @Mock private UserDetailsService userDetailsService;
 
   @Mock private FjwtTokenUtil fjwtTokenUtil;
 
@@ -71,10 +61,6 @@ class FjwtRequestFilterTest {
 
       then(fjwtTokenUtil).should(never()).getUsernameFromToken(anyString());
 
-      then(userDetailsService).should(never()).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
-
       mocked.verify(SecurityContextHolder::getContext, never());
 
       then(filterChain)
@@ -99,10 +85,6 @@ class FjwtRequestFilterTest {
 
       then(fjwtTokenUtil).should(never()).getUsernameFromToken(anyString());
 
-      then(userDetailsService).should(never()).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
-
       mocked.verify(SecurityContextHolder::getContext, never());
 
       then(filterChain)
@@ -123,15 +105,11 @@ class FjwtRequestFilterTest {
 
       given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
 
-      given(fjwtTokenUtil.getUsernameFromToken("token")).willThrow(new IllegalArgumentException());
+      given(fjwtTokenUtil.getUserFromToken("token")).willThrow(new IllegalArgumentException());
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(never()).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
+      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
 
       mocked.verify(SecurityContextHolder::getContext, never());
 
@@ -153,16 +131,12 @@ class FjwtRequestFilterTest {
 
       given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
 
-      given(fjwtTokenUtil.getUsernameFromToken("token"))
+      given(fjwtTokenUtil.getUserFromToken("token"))
           .willThrow(new ExpiredJwtException(null, null, null));
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(never()).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
+      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
 
       mocked.verify(SecurityContextHolder::getContext, never());
 
@@ -177,22 +151,18 @@ class FjwtRequestFilterTest {
 
   @Test
   void
-      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithValidTokenAndFjwtTokenUtilReturnsAnEmptyUsernameShouldAbortAuthentication()
+      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithValidTokenAndFjwtTokenUtilReturnsNullUserShouldAbortAuthentication()
           throws ServletException, IOException {
 
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
       given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
 
-      given(fjwtTokenUtil.getUsernameFromToken("token")).willReturn(StringUtils.EMPTY);
+      given(fjwtTokenUtil.getUserFromToken("token")).willReturn(null);
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(never()).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
+      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
 
       mocked.verify(SecurityContextHolder::getContext, never());
 
@@ -217,17 +187,14 @@ class FjwtRequestFilterTest {
 
       given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
 
-      given(fjwtTokenUtil.getUsernameFromToken("token")).willReturn("username");
+      given(fjwtTokenUtil.getUserFromToken("token"))
+          .willReturn(new FjwtSimpleUserDetailsBuilder("username").build());
 
       mocked.when(SecurityContextHolder::getContext).thenReturn(securityContext);
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(never()).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
+      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
 
       mocked.verify(SecurityContextHolder::getContext, times(1));
 
@@ -237,77 +204,6 @@ class FjwtRequestFilterTest {
 
       assertThat(httpServletRequestCaptor.getValue()).isEqualTo(httpServletRequest);
       assertThat(httpServletResponseCaptor.getValue()).isEqualTo(httpServletResponse);
-    }
-  }
-
-  @Test
-  void
-      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithValidTokenAndUserDetailsServiceThrowsExceptionShouldThrow()
-          throws ServletException, IOException {
-
-    try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
-
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
-
-      given(fjwtTokenUtil.getUsernameFromToken("token")).willReturn("username");
-
-      mocked.when(SecurityContextHolder::getContext).thenReturn(new SecurityContextImpl(null));
-
-      given(userDetailsService.loadUserByUsername("username"))
-          .willThrow(new UsernameNotFoundException(null));
-
-      assertThatThrownBy(
-              () -> target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain))
-          .isExactlyInstanceOf(UsernameNotFoundException.class);
-
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(times(1)).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(never()).validateToken(anyString(), any());
-
-      mocked.verify(SecurityContextHolder::getContext, times(1));
-
-      then(filterChain).should(never()).doFilter(any(), any());
-    }
-  }
-
-  @Test
-  void
-      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithValidTokenAndFjwtTokenUtilReturnFalseOnValidateTokenShouldAbortAuthentication()
-          throws ServletException, IOException {
-
-    try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
-
-      User user =
-          new User(
-              "username",
-              (new BCryptPasswordEncoder()).encode("password"),
-              Collections.emptyList());
-
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
-
-      given(fjwtTokenUtil.getUsernameFromToken("token")).willReturn("username");
-
-      mocked.when(SecurityContextHolder::getContext).thenReturn(new SecurityContextImpl(null));
-
-      given(userDetailsService.loadUserByUsername("username")).willReturn(user);
-
-      doThrow(new JwtException("")).when(fjwtTokenUtil).validateToken("token", user);
-
-      assertThatThrownBy(
-              () -> target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain))
-          .isExactlyInstanceOf(JwtException.class);
-
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(times(1)).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(times(1)).validateToken(anyString(), any());
-
-      mocked.verify(SecurityContextHolder::getContext, times(1));
-
-      then(filterChain).should(never()).doFilter(any(), any());
     }
   }
 
@@ -327,21 +223,13 @@ class FjwtRequestFilterTest {
 
       given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
 
-      given(fjwtTokenUtil.getUsernameFromToken("token")).willReturn("username");
+      given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
 
       mocked.when(SecurityContextHolder::getContext).thenReturn(securityContext);
 
-      given(userDetailsService.loadUserByUsername("username")).willReturn(user);
-
-      doNothing().when(fjwtTokenUtil).validateToken("token", user);
-
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
-      then(fjwtTokenUtil).should(times(1)).getUsernameFromToken("token");
-
-      then(userDetailsService).should(times(1)).loadUserByUsername(anyString());
-
-      then(fjwtTokenUtil).should(times(1)).validateToken(anyString(), any());
+      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
 
       mocked.verify(SecurityContextHolder::getContext, times(2));
 

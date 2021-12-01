@@ -8,20 +8,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Jwt authentication controller */
+/**
+ * Jwt authentication controller.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
 public class FjwtController {
 
   private final AuthenticationManager authenticationManager;
-  private final UserDetailsService userDetailsService;
   private final FjwtTokenUtil fjwtTokenUtil;
 
   /**
@@ -35,13 +39,15 @@ public class FjwtController {
   public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
 
     try {
-      authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
       return ResponseEntity.ok(
           FjwtResponse.builder()
               .token(
                   fjwtTokenUtil.generateToken(
-                      userDetailsService.loadUserByUsername(request.getUsername())))
+                      (UserDetails)
+                          (authenticationManager.authenticate(
+                                  new UsernamePasswordAuthenticationToken(
+                                      request.getUsername(), request.getPassword())))
+                              .getPrincipal()))
               .build());
 
     } catch (AuthenticationException e) {

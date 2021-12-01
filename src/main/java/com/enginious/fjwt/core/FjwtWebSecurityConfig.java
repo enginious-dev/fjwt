@@ -17,7 +17,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/** Fjwt web security configuration */
+/**
+ * Fjwt web security configuration.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
