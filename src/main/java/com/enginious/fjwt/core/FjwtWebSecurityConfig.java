@@ -1,8 +1,10 @@
 package com.enginious.fjwt.core;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @since 1.0.0
  * @author Giuseppe Milazzo
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -38,6 +41,12 @@ public class FjwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
   /** {@inheritDoc} */
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+
+    log.debug(
+        "configuring [{}] with userDetailsService as [{}] and passwordEncoder as [{}]",
+        AuthenticationManagerBuilder.class.getName(),
+        userDetailsService.getClass().getName(),
+        passwordEncoder.getClass().getName());
     auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
   }
 
@@ -45,12 +54,23 @@ public class FjwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Bean
   @Override
   public AuthenticationManager authenticationManagerBean() throws Exception {
+
+    log.debug("registering [{}] using parent method", AuthenticationManager.class.getName());
     return super.authenticationManagerBean();
   }
 
   /** {@inheritDoc} */
   @Override
   protected void configure(HttpSecurity httpSecurity) throws Exception {
+
+    log.debug(
+        "configuring [{}]: paths that don't need authentication are [{}]",
+        HttpSecurity.class.getName(),
+        Stream.concat(
+                Arrays.stream(new String[] {fjwtConfig.getEndpoint()}),
+                fjwtConfig.getUnsecured().stream())
+            .collect(Collectors.joining(", ")));
+
     httpSecurity
         .csrf()
         .disable()

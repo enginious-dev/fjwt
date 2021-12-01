@@ -1,6 +1,7 @@
 package com.enginious.fjwt.core;
 
 import java.util.Collection;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @since 1.1.0
  * @author Giuseppe Milazzo
  */
+@Slf4j
 public class FjwtSimpleUserDetailsBuilder extends FjwtAbstractUserDetailsBuilder {
 
   /**
@@ -25,6 +27,7 @@ public class FjwtSimpleUserDetailsBuilder extends FjwtAbstractUserDetailsBuilder
   /** {@inheritDoc} */
   @Override
   public UserDetails build() {
+    log.debug("building user");
     return new UserDetails() {
       @Override
       public Collection<? extends GrantedAuthority> getAuthorities() {

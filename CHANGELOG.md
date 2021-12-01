@@ -4,10 +4,12 @@
 
 #### Enhancements:
 
-- [#12](https://github.com/enginious-dev/fjwt/issues/12) Upgrade dependency management to
+- [#14](https://github.com/enginious-dev/fjwt/issues/14) Standardized logs to make everything more
+  understandable
+- [#12](https://github.com/enginious-dev/fjwt/issues/12) Upgraded dependency management to
   spring-boot-dependencies 2.6.0
-- [#10](https://github.com/enginious-dev/fjwt/issues/10) Add authorities and user flags to token
-- [#8](https://github.com/enginious-dev/fjwt/issues/8) Remove username check in FjwtRequestFilter
+- [#10](https://github.com/enginious-dev/fjwt/issues/10) Added authorities and user flags to token
+- [#8](https://github.com/enginious-dev/fjwt/issues/8) Removed username check in FjwtRequestFilter
 
 #### Bug Fixes:
 

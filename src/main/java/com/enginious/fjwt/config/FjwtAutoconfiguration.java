@@ -19,6 +19,7 @@ public class FjwtAutoconfiguration {
   /** Logs if the configuration has been loaded into the context. */
   @PostConstruct
   protected void init() {
-    log.info("configuration loaded");
+
+    log.debug("configuration loaded");
   }
 }
