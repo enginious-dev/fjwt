@@ -49,6 +49,7 @@ public class FjwtTokenUtil {
 
   private String secret;
 
+  /** initialize this bean, see {@link PostConstruct} */
   @PostConstruct
   protected void init() {
     if (StringUtils.isBlank(fjwtConfig.getSecret())) {
