@@ -5,7 +5,9 @@ import com.enginious.fjwt.core.FjwtClaimsExtractor;
 import io.jsonwebtoken.Claims;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +20,7 @@ import org.springframework.util.CollectionUtils;
  * @since 1.1.0
  * @author Giuseppe Milazzo
  */
+@Slf4j
 public class FjwtAuthoritiesExtractor implements FjwtClaimsExtractor {
 
   /** Authorities key */
@@ -27,24 +30,46 @@ public class FjwtAuthoritiesExtractor implements FjwtClaimsExtractor {
   @Override
   public void getClaims(UserDetails source, Claims dest) {
 
+    log.debug(
+        "found [{}] authorities in user",
+        Objects.nonNull(source.getAuthorities()) ? source.getAuthorities().size() : 0);
+
     dest.put(
         AUTHORITIES,
         (CollectionUtils.isEmpty(source.getAuthorities())
                 ? new ArrayList<>()
                 : source.getAuthorities())
-            .stream().map(o -> ((GrantedAuthority) o).getAuthority()).collect(Collectors.toList()));
+            .stream()
+                .map(
+                    o -> {
+                      String authority = ((GrantedAuthority) o).getAuthority();
+                      log.debug("adding authority with value [{}]", authority);
+                      return authority;
+                    })
+                .collect(Collectors.toList()));
   }
 
   /** {@inheritDoc} */
   @Override
   @SuppressWarnings("unchecked")
   public void addData(Claims source, FjwtAbstractUserDetailsBuilder dest) {
+
     Collection<String> authorities =
         ObjectUtils.defaultIfNull(
             source.get(AUTHORITIES, Collection.class), new ArrayList<String>());
+
+    log.debug(
+        "found [{}] authorities in token", Objects.nonNull(authorities) ? authorities.size() : 0);
+
     if (!CollectionUtils.isEmpty(authorities)) {
       dest.authorities(
-          authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+          authorities.stream()
+              .map(
+                  a -> {
+                    log.debug("retrieved authority with value [{}]", a);
+                    return new SimpleGrantedAuthority(a);
+                  })
+              .collect(Collectors.toList()));
     }
   }
 }

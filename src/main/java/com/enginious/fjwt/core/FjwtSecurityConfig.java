@@ -5,16 +5,15 @@ import com.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
 import java.time.Clock;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,8 +27,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @since 1.0.0
  * @author Giuseppe Milazzo
  */
+@Slf4j
 @Configuration
 public class FjwtSecurityConfig {
+
+  private static final String DEFAULT_BEAN_REGISTRATION_PATTERN =
+      "registering bean of type [{}] as default [{}]";
+  private static final String DEFAULT_EXTRACTORS_BEAN_REGISTRATION_PATTERN =
+      "registering bean of type [{}] as default [{}], if you want to exclude the default extractors set the property fjwt.enableDefaultExtractors to false";
 
   /**
    * register the default {@link PasswordEncoder}
@@ -39,6 +44,11 @@ public class FjwtSecurityConfig {
   @Bean
   @ConditionalOnMissingBean(PasswordEncoder.class)
   public PasswordEncoder passwordEncoder() {
+
+    log.debug(
+        DEFAULT_BEAN_REGISTRATION_PATTERN,
+        BCryptPasswordEncoder.class.getName(),
+        PasswordEncoder.class.getName());
     return new BCryptPasswordEncoder();
   }
 
@@ -51,7 +61,12 @@ public class FjwtSecurityConfig {
   @Bean
   @ConditionalOnMissingBean(UserDetailsService.class)
   public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-    return s -> new User(s, passwordEncoder.encode(s), Collections.emptyList());
+
+    log.warn(
+        "registering bean of type [{}] as default [{}]: you should use this bean for testing purposes only",
+        FjwtDummyUserDetailsService.class.getName(),
+        UserDetailsService.class.getName());
+    return new FjwtDummyUserDetailsService(passwordEncoder);
   }
 
   /**
@@ -64,6 +79,11 @@ public class FjwtSecurityConfig {
   @ConditionalOnMissingBean(FjwtClaimsExtractorChain.class)
   public FjwtClaimsExtractorChain claimsExtractorChain(
       Optional<List<FjwtClaimsExtractor>> extractors) {
+
+    log.debug(
+        DEFAULT_BEAN_REGISTRATION_PATTERN,
+        FjwtClaimsExtractorChain.class.getName(),
+        FjwtClaimsExtractorChain.class.getName());
     return new FjwtClaimsExtractorChain(extractors.orElse(new ArrayList<>()));
   }
 
@@ -75,6 +95,11 @@ public class FjwtSecurityConfig {
   @Bean
   @ConditionalOnMissingBean(FjwtUserDetailsBuilderFactory.class)
   public FjwtUserDetailsBuilderFactory userDetailsBuilderFactory() {
+
+    log.debug(
+        DEFAULT_BEAN_REGISTRATION_PATTERN,
+        FjwtSimpleUserDetailsBuilder.class.getName(),
+        FjwtUserDetailsBuilderFactory.class.getName());
     return FjwtSimpleUserDetailsBuilder::new;
   }
 
@@ -90,6 +115,11 @@ public class FjwtSecurityConfig {
       havingValue = "true",
       matchIfMissing = true)
   public FjwtAuthoritiesExtractor authoritiesExtractor() {
+
+    log.debug(
+        DEFAULT_EXTRACTORS_BEAN_REGISTRATION_PATTERN,
+        FjwtAuthoritiesExtractor.class.getName(),
+        FjwtClaimsExtractor.class.getName());
     return new FjwtAuthoritiesExtractor();
   }
 
@@ -105,6 +135,11 @@ public class FjwtSecurityConfig {
       havingValue = "true",
       matchIfMissing = true)
   public FjwtUserDetailsFlagsExtractor userDetailsFlagsExtractor() {
+
+    log.debug(
+        DEFAULT_EXTRACTORS_BEAN_REGISTRATION_PATTERN,
+        FjwtUserDetailsFlagsExtractor.class.getName(),
+        FjwtClaimsExtractor.class.getName());
     return new FjwtUserDetailsFlagsExtractor();
   }
 
@@ -117,6 +152,8 @@ public class FjwtSecurityConfig {
   @Bean
   @ConditionalOnMissingBean(Clock.class)
   public Clock clock(@Value("${fjwt.zoneId:}") String zoneId) {
+
+    log.debug("registering bean of type [{}] as default", Clock.class.getName());
     return Clock.system(StringUtils.isBlank(zoneId) ? ZoneId.systemDefault() : ZoneId.of(zoneId));
   }
 }

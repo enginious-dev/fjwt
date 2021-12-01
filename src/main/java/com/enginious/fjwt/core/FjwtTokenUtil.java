@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  * @author Giuseppe Milazzo
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FjwtTokenUtil {
@@ -56,6 +58,7 @@ public class FjwtTokenUtil {
    *     whitespace.
    */
   public String getUsernameFromToken(String token) {
+    log.debug("retrieving username from token");
     return getClaimFromToken(token, Claims::getSubject);
   }
 
@@ -74,6 +77,7 @@ public class FjwtTokenUtil {
    *     whitespace.
    */
   public Date getExpirationDateFromToken(String token) {
+    log.debug("retrieving expiration date from token");
     return getClaimFromToken(token, Claims::getExpiration);
   }
 
@@ -84,6 +88,7 @@ public class FjwtTokenUtil {
    * @return a new token
    */
   public String generateToken(UserDetails userDetails) {
+    log.debug("generating token for user [{}]", userDetails.getUsername());
     return doGenerateToken(claimsExtractorChain.getClaims(userDetails), userDetails.getUsername());
   }
 
@@ -94,10 +99,13 @@ public class FjwtTokenUtil {
    * @return the reconstructed user
    */
   public UserDetails getUserFromToken(String token) {
+    log.debug("retrieving user from token");
     Claims claims = getAllClaimsFromToken(token);
     FjwtAbstractUserDetailsBuilder builder = userDetailsBuilderFactory.apply(claims.getSubject());
     claimsExtractorChain.addData(claims, builder);
-    return builder.build();
+    UserDetails userDetails = builder.build();
+    log.debug("user [{}] retrieved from token", userDetails.getUsername());
+    return userDetails;
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -105,6 +113,7 @@ public class FjwtTokenUtil {
   }
 
   private Claims getAllClaimsFromToken(String token) {
+    log.debug("parsing token");
     return Jwts.parser()
         .setSigningKey(
             new SecretKeySpec(

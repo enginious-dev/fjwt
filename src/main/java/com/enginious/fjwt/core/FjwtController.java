@@ -3,6 +3,7 @@ package com.enginious.fjwt.core;
 import com.enginious.fjwt.dto.FjwtRequest;
 import com.enginious.fjwt.dto.FjwtResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 1.0.0
  * @author Giuseppe Milazzo
  */
+@Slf4j
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
@@ -39,6 +41,7 @@ public class FjwtController {
   public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
 
     try {
+      log.debug("processing request for user [{}]", request.getUsername());
       return ResponseEntity.ok(
           FjwtResponse.builder()
               .token(
@@ -51,6 +54,10 @@ public class FjwtController {
               .build());
 
     } catch (AuthenticationException e) {
+      log.error(
+          String.format(
+              "error occurred while processing request for user [%s]:", request.getUsername()),
+          e);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
