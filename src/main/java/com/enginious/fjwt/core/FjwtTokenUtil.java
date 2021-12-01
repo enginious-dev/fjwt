@@ -4,14 +4,18 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.impl.crypto.MacProvider;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
+import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +46,27 @@ public class FjwtTokenUtil {
 
   /** User details builder factory */
   private final FjwtUserDetailsBuilderFactory userDetailsBuilderFactory;
+
+  private String secret;
+
+  /** initialize this bean, see {@link PostConstruct} */
+  @PostConstruct
+  protected void init() {
+    if (StringUtils.isBlank(fjwtConfig.getSecret())) {
+      log.info("no secret provided, generating one");
+      this.secret =
+          new String(
+              Base64.getEncoder()
+                  .encode(MacProvider.generateKey(SignatureAlgorithm.HS256).getEncoded()),
+              StandardCharsets.UTF_8);
+      log.info("generated secret is: {}", this.secret);
+    } else {
+      log.info(
+          "secret provided, using {}",
+          StringUtils.repeat("*", StringUtils.length(fjwtConfig.getSecret())));
+      this.secret = fjwtConfig.getSecret();
+    }
+  }
 
   /**
    * Parse token and return the username
@@ -117,8 +142,7 @@ public class FjwtTokenUtil {
     return Jwts.parser()
         .setSigningKey(
             new SecretKeySpec(
-                fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
-                fjwtConfig.getAlgorithm().getJcaName()))
+                secret.getBytes(StandardCharsets.UTF_8), fjwtConfig.getAlgorithm().getJcaName()))
         .parseClaimsJws(token)
         .getBody();
   }
@@ -134,8 +158,7 @@ public class FjwtTokenUtil {
         .signWith(
             fjwtConfig.getAlgorithm(),
             new SecretKeySpec(
-                fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
-                fjwtConfig.getAlgorithm().getJcaName()))
+                secret.getBytes(StandardCharsets.UTF_8), fjwtConfig.getAlgorithm().getJcaName()))
         .compact();
   }
 

@@ -31,7 +31,7 @@ public class FjwtConfig {
   private int ttl = 3600;
 
   /** Server secret */
-  private String secret = "secret";
+  private String secret;
 
   /** Server timezone, if blank {@link ZoneId#systemDefault()} will be used */
   private String zoneId;

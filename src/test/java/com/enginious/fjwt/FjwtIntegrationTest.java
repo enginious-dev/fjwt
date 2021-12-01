@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @TestPropertySource(
     properties = {
       "fjwt.algorithm=HS256",
+      "fjwt.secret=secret",
       "fjwt.unsecured[0]=/unsecuredEndpoint",
       "spring.main.allow-bean-definition-overriding=true"
     })
