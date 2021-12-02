@@ -8,7 +8,6 @@ pipeline {
 
     tools {
         maven "maven"
-
     }
 
     environment {
