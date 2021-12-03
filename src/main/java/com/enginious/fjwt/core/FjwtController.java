@@ -2,6 +2,7 @@ package com.enginious.fjwt.core;
 
 import com.enginious.fjwt.dto.FjwtRequest;
 import com.enginious.fjwt.dto.FjwtResponse;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,8 @@ public class FjwtController {
    *     {@link HttpStatus#UNAUTHORIZED} in case of failure.
    */
   @PostMapping("${fjwt.endpoint:/authenticate}")
-  public ResponseEntity<FjwtResponse> createAuthenticationToken(@RequestBody FjwtRequest request) {
+  public ResponseEntity<FjwtResponse> createAuthenticationToken(
+      @Valid @RequestBody FjwtRequest request) {
 
     try {
       log.debug("processing request for user [{}]", request.getUsername());

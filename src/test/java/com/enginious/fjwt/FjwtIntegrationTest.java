@@ -2,6 +2,7 @@ package com.enginious.fjwt;
 
 import static org.mockito.Mockito.mockStatic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.jsonwebtoken.Jwts;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -110,6 +112,26 @@ class FjwtIntegrationTest {
                       "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzMDAwMzIwMCwiaWF0IjoxNjMwMDA5NjAwfQ.aechoT_1XYVm1GNdqUj9C4y3b7bqzcUj0mo-xeQAIjA"))
           .andExpect(status().isUnauthorized());
     }
+  }
+
+  @Test
+  void whenAuthenticateAndUsernameIsBlankShouldReturn400() throws Exception {
+    mockMvc
+        .perform(
+            post("/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void whenAuthenticateAndUsernameIsNotBlankShouldReturnToken() throws Exception {
+    mockMvc
+        .perform(
+            post("/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"username\", \"password\": \"username\"}"))
+        .andExpect(status().isOk());
   }
 
   @Configuration

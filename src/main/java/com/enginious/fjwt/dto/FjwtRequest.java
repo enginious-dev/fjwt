@@ -1,5 +1,6 @@
 package com.enginious.fjwt.dto;
 
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ import lombok.Setter;
 public class FjwtRequest {
 
   /** The username */
+  @NotBlank(message = "username is mandatory")
   private String username;
 
   /** The password */

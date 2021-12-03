@@ -4,6 +4,7 @@
 
 #### Enhancements:
 
+- [#19](https://github.com/enginious-dev/fjwt/issues/19) Added login request validation
 - [#15](https://github.com/enginious-dev/fjwt/issues/15) Random secret generation support
 - [#14](https://github.com/enginious-dev/fjwt/issues/14) Standardized logs to make everything more
   understandable
