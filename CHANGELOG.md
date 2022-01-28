@@ -4,6 +4,8 @@
 
 #### Enhancements:
 
+- [#22](https://github.com/enginious-dev/fjwt/issues/22) Upgraded dependency management to
+  spring-boot-dependencies 2.6.3
 - [#19](https://github.com/enginious-dev/fjwt/issues/19) Added login request validation
 - [#15](https://github.com/enginious-dev/fjwt/issues/15) Random secret generation support
 - [#14](https://github.com/enginious-dev/fjwt/issues/14) Standardized logs to make everything more
