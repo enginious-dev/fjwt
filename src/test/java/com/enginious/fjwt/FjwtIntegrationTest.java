@@ -2,6 +2,7 @@ package com.enginious.fjwt;
 
 import static org.mockito.Mockito.mockStatic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.jsonwebtoken.Jwts;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @TestPropertySource(
     properties = {
       "fjwt.algorithm=HS256",
+      "fjwt.secret=secret",
       "fjwt.unsecured[0]=/unsecuredEndpoint",
       "spring.main.allow-bean-definition-overriding=true"
     })
@@ -64,7 +67,7 @@ class FjwtIntegrationTest {
               get("/securedEndpoint")
                   .header(
                       "Authorization",
-                      "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwfQ.PpkOJKaNaNgjkxuxg8VdRllxKRDlFOsdRVosoDiv6NE"))
+                      "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwLCJjcmVkZW50aWFsc0V4cGlyZWQiOmZhbHNlLCJhY2NvdW50RXhwaXJlZCI6ZmFsc2UsImFjY291bnRMb2NrZWQiOmZhbHNlLCJlbmFibGVkIjp0cnVlfQ.Q8VRD8-1KfVchi-xoJrtu3gutIXsJInnhFRBrDMSmvk"))
           .andExpect(status().isOk());
     }
   }
@@ -109,6 +112,26 @@ class FjwtIntegrationTest {
                       "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzMDAwMzIwMCwiaWF0IjoxNjMwMDA5NjAwfQ.aechoT_1XYVm1GNdqUj9C4y3b7bqzcUj0mo-xeQAIjA"))
           .andExpect(status().isUnauthorized());
     }
+  }
+
+  @Test
+  void whenAuthenticateAndUsernameIsBlankShouldReturn400() throws Exception {
+    mockMvc
+        .perform(
+            post("/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"\"}"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void whenAuthenticateAndUsernameIsNotBlankShouldReturnToken() throws Exception {
+    mockMvc
+        .perform(
+            post("/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"username\", \"password\": \"username\"}"))
+        .andExpect(status().isOk());
   }
 
   @Configuration

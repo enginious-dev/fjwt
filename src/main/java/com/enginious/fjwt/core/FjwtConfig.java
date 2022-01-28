@@ -9,7 +9,12 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/** Fjwt configuration parameters */
+/**
+ * Fjwt configuration parameters.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
 @Getter
 @Setter
 @Component
@@ -26,11 +31,14 @@ public class FjwtConfig {
   private int ttl = 3600;
 
   /** Server secret */
-  private String secret = "secret";
+  private String secret;
 
   /** Server timezone, if blank {@link ZoneId#systemDefault()} will be used */
   private String zoneId;
 
   /** Signature algorithm */
   private SignatureAlgorithm algorithm = SignatureAlgorithm.HS512;
+
+  /** Default {@link FjwtClaimsExtractor} enabling flag */
+  private boolean enableDefaultExtractors = true;
 }

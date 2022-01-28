@@ -2,26 +2,35 @@ package com.enginious.fjwt.core;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.impl.crypto.MacProvider;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import javax.annotation.PostConstruct;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-/** Jwt token utilities */
+/**
+ * Jwt token utilities.
+ *
+ * @since 1.0.0
+ * @author Giuseppe Milazzo
+ */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FjwtTokenUtil {
@@ -31,6 +40,33 @@ public class FjwtTokenUtil {
 
   /** Fjwt configuration */
   private final FjwtConfig fjwtConfig;
+
+  /** Claims extractor chain */
+  private final FjwtClaimsExtractorChain claimsExtractorChain;
+
+  /** User details builder factory */
+  private final FjwtUserDetailsBuilderFactory userDetailsBuilderFactory;
+
+  private String secret;
+
+  /** initialize this bean, see {@link PostConstruct} */
+  @PostConstruct
+  protected void init() {
+    if (StringUtils.isBlank(fjwtConfig.getSecret())) {
+      log.info("no secret provided, generating one");
+      this.secret =
+          new String(
+              Base64.getEncoder()
+                  .encode(MacProvider.generateKey(SignatureAlgorithm.HS256).getEncoded()),
+              StandardCharsets.UTF_8);
+      log.info("generated secret is: {}", this.secret);
+    } else {
+      log.info(
+          "secret provided, using {}",
+          StringUtils.repeat("*", StringUtils.length(fjwtConfig.getSecret())));
+      this.secret = fjwtConfig.getSecret();
+    }
+  }
 
   /**
    * Parse token and return the username
@@ -47,6 +83,7 @@ public class FjwtTokenUtil {
    *     whitespace.
    */
   public String getUsernameFromToken(String token) {
+    log.debug("retrieving username from token");
     return getClaimFromToken(token, Claims::getSubject);
   }
 
@@ -65,31 +102,8 @@ public class FjwtTokenUtil {
    *     whitespace.
    */
   public Date getExpirationDateFromToken(String token) {
+    log.debug("retrieving expiration date from token");
     return getClaimFromToken(token, Claims::getExpiration);
-  }
-
-  /**
-   * Validate a token
-   *
-   * @param token the token
-   * @param userDetails the user detail
-   * @throws MalformedJwtException if the specified JWT was incorrectly constructed (and therefore
-   *     invalid). Invalid JWTs should not be trusted and should be discarded.
-   * @throws SignatureException if a JWS signature was discovered, but could not be verified. JWTs
-   *     that fail signature validation should not be trusted and should be discarded.
-   * @throws ExpiredJwtException if the specified JWT is a Claims JWT and the Claims has an
-   *     expiration time before the time this method is invoked.
-   * @throws IllegalArgumentException if the specified string is {@code null} or empty or only
-   *     whitespace.
-   */
-  public void validateToken(String token, UserDetails userDetails) {
-    String usernameFromToken = getUsernameFromToken(token);
-    if (!StringUtils.equals(usernameFromToken, userDetails.getUsername())) {
-      throw new JwtException(
-          String.format(
-              "username from JWT [%s] is different than expected [%s].",
-              usernameFromToken, userDetails.getUsername()));
-    }
   }
 
   /**
@@ -99,7 +113,24 @@ public class FjwtTokenUtil {
    * @return a new token
    */
   public String generateToken(UserDetails userDetails) {
-    return doGenerateToken(new HashMap<>(), userDetails.getUsername());
+    log.debug("generating token for user [{}]", userDetails.getUsername());
+    return doGenerateToken(claimsExtractorChain.getClaims(userDetails), userDetails.getUsername());
+  }
+
+  /**
+   * Reconstruct user from token
+   *
+   * @param token the token
+   * @return the reconstructed user
+   */
+  public UserDetails getUserFromToken(String token) {
+    log.debug("retrieving user from token");
+    Claims claims = getAllClaimsFromToken(token);
+    FjwtAbstractUserDetailsBuilder builder = userDetailsBuilderFactory.apply(claims.getSubject());
+    claimsExtractorChain.addData(claims, builder);
+    UserDetails userDetails = builder.build();
+    log.debug("user [{}] retrieved from token", userDetails.getUsername());
+    return userDetails;
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -107,11 +138,11 @@ public class FjwtTokenUtil {
   }
 
   private Claims getAllClaimsFromToken(String token) {
+    log.debug("parsing token");
     return Jwts.parser()
         .setSigningKey(
             new SecretKeySpec(
-                fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
-                fjwtConfig.getAlgorithm().getJcaName()))
+                secret.getBytes(StandardCharsets.UTF_8), fjwtConfig.getAlgorithm().getJcaName()))
         .parseClaimsJws(token)
         .getBody();
   }
@@ -127,8 +158,7 @@ public class FjwtTokenUtil {
         .signWith(
             fjwtConfig.getAlgorithm(),
             new SecretKeySpec(
-                fjwtConfig.getSecret().getBytes(StandardCharsets.UTF_8),
-                fjwtConfig.getAlgorithm().getJcaName()))
+                secret.getBytes(StandardCharsets.UTF_8), fjwtConfig.getAlgorithm().getJcaName()))
         .compact();
   }
 
