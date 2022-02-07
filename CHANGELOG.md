@@ -1,6 +1,18 @@
 # Changelog
 
-## v1.1.0 (03/01/2022)
+## v1.2.0 (17/04/2022)
+
+#### Enhancements:
+
+*No enhancements for this release.*
+
+#### Bug Fixes:
+
+- [#28](https://github.com/enginious-dev/fjwt/issues/28) CVE-2021-44228 fix
+
+---
+
+## v1.1.0 (28/01/2022)
 
 #### Enhancements:
 
