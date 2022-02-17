@@ -70,7 +70,7 @@ If you want to test add this the dependency to you `pom.xml`:
 <dependency>
     <groupId>com.enginious-dev</groupId>
     <artifactId>fjwt</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
