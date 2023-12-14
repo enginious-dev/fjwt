@@ -1,0 +1,2 @@
+@Library('sharedPipeline') _
+nexusArtifact()
