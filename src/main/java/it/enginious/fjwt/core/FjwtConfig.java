@@ -1,15 +1,14 @@
 package it.enginious.fjwt.core;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * Fjwt configuration parameters.
@@ -59,6 +58,11 @@ public class FjwtConfig {
     private boolean enableDefaultExtractors = true;
 
     /**
+     * Frame options
+     */
+    private FrameOptions frameOptions = new FrameOptions();
+
+    /**
      * Get all unsecured endpoints (which means this.endpoint + this.unsecured)
      *
      * @return all unsecured endpoints
@@ -66,5 +70,12 @@ public class FjwtConfig {
     public String[] getAllUnsecuredEndpoints() {
         return Stream.concat(Arrays.stream(new String[]{getEndpoint()}), getUnsecured().stream())
                 .toArray(String[]::new);
+    }
+
+    @Getter
+    @Setter
+    public static class FrameOptions {
+        private boolean disabled = true;
+        private boolean sameOrigin = true;
     }
 }

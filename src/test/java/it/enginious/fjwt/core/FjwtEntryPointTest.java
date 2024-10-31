@@ -1,17 +1,17 @@
 package it.enginious.fjwt.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FjwtEntryPointTest {
@@ -20,6 +20,9 @@ class FjwtEntryPointTest {
 
     @Mock
     private HttpServletResponse httpServletResponse;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @Captor
     private ArgumentCaptor<Integer> statusCodeCaptor;
@@ -30,9 +33,12 @@ class FjwtEntryPointTest {
     @Test
     void whenCommenceShouldSendError() throws IOException {
 
+        given(httpServletRequest.getRequestURI()).willReturn("/test");
+        given(httpServletRequest.getMethod()).willReturn("GET");
+
         doNothing().when(httpServletResponse).sendError(anyInt(), anyString());
 
-        target.commence(null, httpServletResponse, null);
+        target.commence(httpServletRequest, httpServletResponse, null);
 
         then(httpServletResponse)
                 .should(times(1))

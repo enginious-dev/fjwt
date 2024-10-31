@@ -7,6 +7,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,13 +23,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Check if a token is supplied in request and its validity. If a valid token is found the
@@ -65,8 +64,11 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
         if (unsecuredEndpointsMatchers.stream().anyMatch(rm -> rm.matches(request))) {
             log.debug(
                     "request is for [{}] which is an unsecured endpoint, bypassing chain",
-                    request.getPathInfo());
+                    request.getRequestURI());
         } else {
+            log.debug(
+                    "request is for [{}] which is an secured endpoint, chain will be invoked",
+                    request.getRequestURI());
             handleRequest(request);
         }
 

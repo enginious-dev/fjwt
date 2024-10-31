@@ -4,16 +4,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import it.enginious.fjwt.core.FjwtAbstractUserDetailsBuilder;
 import it.enginious.fjwt.core.FjwtClaimsExtractor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
 
 /**
  * Authorities extractor, adds all authorities to the token.

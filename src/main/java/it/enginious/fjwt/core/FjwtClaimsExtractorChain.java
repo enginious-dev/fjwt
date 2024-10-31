@@ -2,13 +2,12 @@ package it.enginious.fjwt.core;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaimsBuilder;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Represents the extractors chain. When the token is generated all registered extractors will be

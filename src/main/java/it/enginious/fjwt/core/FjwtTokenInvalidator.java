@@ -11,22 +11,22 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public interface FjwtTokenInvalidator {
 
-    /**
-     * Stores token in external system
-     *
-     * @param source the user
-     * @param token  the token
-     * @throws FjwtTokenInvalidatorException if any error occurs
-     */
-    void store(UserDetails source, String token) throws FjwtTokenInvalidatorException;
+  /**
+   * Stores token in external system
+   *
+   * @param source the user
+   * @param token the token
+   * @throws FjwtTokenInvalidatorException if any error occurs
+   */
+  void store(UserDetails source, String token) throws FjwtTokenInvalidatorException;
 
-    /**
-     * Checks if the token was invalidated
-     *
-     * @param source the user
-     * @param token  the token
-     * @return true if the token was invalidated otherwise false
-     * @throws FjwtTokenInvalidatorException if any error occurs
-     */
-    boolean wasInvalidated(UserDetails source, String token) throws FjwtTokenInvalidatorException;
+  /**
+   * Checks if the token was invalidated
+   *
+   * @param source the user
+   * @param token the token
+   * @return true if the token was invalidated otherwise false
+   * @throws FjwtTokenInvalidatorException if any error occurs
+   */
+  boolean wasInvalidated(UserDetails source, String token) throws FjwtTokenInvalidatorException;
 }

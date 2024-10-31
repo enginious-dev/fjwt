@@ -1,10 +1,9 @@
 package it.enginious.fjwt.core;
 
+import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 
 /**
  * The default implementation for {@link FjwtAbstractUserDetailsBuilder} that returns an on the fly

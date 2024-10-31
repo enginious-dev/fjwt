@@ -1,11 +1,26 @@
 package it.enginious.fjwt.core;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mockStatic;
+
 import ch.qos.logback.classic.Level;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.lang.Registry;
 import io.jsonwebtoken.security.*;
 import it.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
+import java.nio.charset.StandardCharsets;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import nl.altindag.log.LogCaptor;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
@@ -20,22 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mockStatic;
 
 @ExtendWith(MockitoExtension.class)
 class FjwtTokenUtilTest {

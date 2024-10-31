@@ -1,5 +1,6 @@
 package it.enginious.fjwt.core;
 
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
@@ -7,8 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Collections;
 
 /**
  * A dummy implementation for {@link UserDetailsService} that returns, for any username passed, a

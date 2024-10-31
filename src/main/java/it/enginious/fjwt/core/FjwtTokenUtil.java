@@ -10,15 +10,6 @@ import io.jsonwebtoken.security.SecureDigestAlgorithm;
 import io.jsonwebtoken.security.SignatureAlgorithm;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +21,14 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 /**
  * Jwt token utilities.

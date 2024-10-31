@@ -2,13 +2,12 @@ package it.enginious.fjwt.core;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 /**
  * See {@link AuthenticationEntryPoint}.
@@ -30,9 +29,11 @@ public class FjwtEntryPoint implements AuthenticationEntryPoint {
             AuthenticationException authException)
             throws IOException {
         log.debug(
-                "sending response with code [{}] and message [{}]",
+                "sending response with code [{}] and message [{}] for [{}] [{}]",
                 HttpStatus.UNAUTHORIZED.value(),
-                HttpStatus.UNAUTHORIZED.getReasonPhrase());
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                request.getMethod(),
+                request.getRequestURI());
         response.sendError(HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase());
     }
 }
