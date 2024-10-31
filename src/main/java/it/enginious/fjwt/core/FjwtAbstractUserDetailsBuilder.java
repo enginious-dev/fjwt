@@ -1,11 +1,10 @@
 package it.enginious.fjwt.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Base class for all Fjwt user details builder. In this scope a user details builder it's an object

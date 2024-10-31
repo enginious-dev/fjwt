@@ -15,8 +15,6 @@ import lombok.*;
 @AllArgsConstructor
 public class FjwtResponse {
 
-    /**
-     * The jwt token
-     */
-    private String token;
+  /** The jwt token */
+  private String token;
 }

@@ -2,6 +2,11 @@ package it.enginious.fjwt.core;
 
 import it.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
 import it.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
+import java.time.Clock;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,12 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.time.Clock;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides {@link PasswordEncoder} and/or {@link UserDetailsService} beans they are missing. The

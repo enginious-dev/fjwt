@@ -16,12 +16,10 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "it.enginious.fjwt.core")
 public class FjwtAutoconfiguration {
 
-    /**
-     * Logs if the configuration has been loaded into the context.
-     */
-    @PostConstruct
-    protected void init() {
+  /** Logs if the configuration has been loaded into the context. */
+  @PostConstruct
+  protected void init() {
 
-        log.debug("configuration loaded");
-    }
+    log.debug("configuration loaded");
+  }
 }

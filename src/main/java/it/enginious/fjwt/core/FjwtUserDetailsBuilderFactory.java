@@ -10,5 +10,4 @@ import java.util.function.Function;
  * @since 1.1.0
  */
 public interface FjwtUserDetailsBuilderFactory
-        extends Function<String, FjwtAbstractUserDetailsBuilder> {
-}
+    extends Function<String, FjwtAbstractUserDetailsBuilder> {}

@@ -1,5 +1,7 @@
 package it.enginious.fjwt.core.extractors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.impl.DefaultClaimsBuilder;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class FjwtUserDetailsFlagsExtractorTest {
 

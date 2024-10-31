@@ -16,14 +16,10 @@ import lombok.*;
 @AllArgsConstructor
 public class FjwtRequest {
 
-    /**
-     * The username
-     */
-    @NotBlank(message = "username is mandatory")
-    private String username;
+  /** The username */
+  @NotBlank(message = "username is mandatory")
+  private String username;
 
-    /**
-     * The password
-     */
-    private String password;
+  /** The password */
+  private String password;
 }

@@ -1,9 +1,9 @@
 package it.enginious.fjwt.core;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+
+import org.junit.jupiter.api.Test;
 
 class NoopTokenInvalidatorTest {
 

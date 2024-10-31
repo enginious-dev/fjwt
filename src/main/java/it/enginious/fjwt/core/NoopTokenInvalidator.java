@@ -10,19 +10,15 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public final class NoopTokenInvalidator implements FjwtTokenInvalidator {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void store(UserDetails source, String token) {
-        // do nothing
-    }
+  /** {@inheritDoc} */
+  @Override
+  public void store(UserDetails source, String token) {
+    // do nothing
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean wasInvalidated(UserDetails source, String token) {
-        return false;
-    }
+  /** {@inheritDoc} */
+  @Override
+  public boolean wasInvalidated(UserDetails source, String token) {
+    return false;
+  }
 }
