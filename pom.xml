@@ -44,7 +44,7 @@
     <commons-io.commons-io.version>2.17.0</commons-io.commons-io.version>
     <org.mockito.mockito-inline.version>5.2.0</org.mockito.mockito-inline.version>
     <io.github.hakky54.logcaptor.version>2.9.3</io.github.hakky54.logcaptor.version>
-    <org.jacoco.jacoco-maven-plugin.version>0.8.11</org.jacoco.jacoco-maven-plugin.version>
+    <org.jacoco.jacoco-maven-plugin.version>0.8.12</org.jacoco.jacoco-maven-plugin.version>
     <org.apache.maven.plugins.maven-compiler-plugin.version>3.11.0</org.apache.maven.plugins.maven-compiler-plugin.version>
     <org.projectlombok.lombok-maven-plugin.version>1.18.20.0</org.projectlombok.lombok-maven-plugin.version>
     <org.apache.maven.plugins.maven-antrun-plugin.version>3.1.0</org.apache.maven.plugins.maven-antrun-plugin.version>
@@ -125,7 +125,6 @@
       <scope>provided</scope>
     </dependency>
 
-
     <!-- test -->
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
@@ -139,13 +138,6 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-inline -->
-<!--    <dependency>-->
-<!--      <groupId>org.mockito</groupId>-->
-<!--      <artifactId>mockito-inline</artifactId>-->
-<!--      <version>${org.mockito.mockito-inline.version}</version>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
     <!-- https://mvnrepository.com/artifact/io.github.hakky54/logcaptor -->
     <dependency>
       <groupId>io.github.hakky54</groupId>
