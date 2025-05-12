@@ -1,11 +1,12 @@
 # Changelog
-## v3.3.5 (?)
+## v3.4.5 (?)
 #### Enhancements:
 - upgraded to java release 21
 - upgraded dependency of io.github.hakky5/logcaptor to [2.9.3](https://github.com/Hakky54/log-captor/blob/master/CHANGELOG.MD)
 - upgraded dependency of io.jsonwebtoken/jjwt-* to [0.12.6](https://github.com/jwtk/jjwt/blob/master/CHANGELOG.md)
 - [[#3](https://github.com/enginious-dev/fjwt/issues/3)] added properties to customize frame option
 - [[#1](https://github.com/enginious-dev/fjwt/issues/1)] upgraded Spring Boot dependencies to 3.3.5
+- [[#5](https://github.com/enginious-dev/fjwt/issues/5)] upgraded Spring Boot dependencies to 3.4.5
 #### Bug Fixes:
 *No bug fixes for this release.*
 
