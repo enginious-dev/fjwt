@@ -1,12 +1,12 @@
 package it.enginious.fjwt.core;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 class FjwtSimpleUserDetailsBuilderTest {
 

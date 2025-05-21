@@ -1,6 +1,7 @@
 package it.enginious.fjwt.dto;
 
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.*;
 
 /**
