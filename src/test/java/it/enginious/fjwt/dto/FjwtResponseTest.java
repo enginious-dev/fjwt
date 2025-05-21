@@ -6,23 +6,23 @@ import org.junit.jupiter.api.Test;
 
 class FjwtResponseTest {
 
-    @Test
-    void testDefaultConstructor() {
+  @Test
+  void testDefaultConstructor() {
 
-        FjwtResponse rs = new FjwtResponse();
+    FjwtResponse rs = new FjwtResponse();
 
-        assertThat(rs.getToken()).isBlank();
-    }
+    assertThat(rs.getToken()).isBlank();
+  }
 
-    @Test
-    void testAccessor() {
+  @Test
+  void testAccessor() {
 
-        FjwtResponse rs = FjwtResponse.builder().token("token1").build();
+    FjwtResponse rs = FjwtResponse.builder().token("token1").build();
 
-        assertThat(rs.getToken()).isEqualTo("token1");
+    assertThat(rs.getToken()).isEqualTo("token1");
 
-        rs.setToken("token2");
+    rs.setToken("token2");
 
-        assertThat(rs.getToken()).isEqualTo("token2");
-    }
+    assertThat(rs.getToken()).isEqualTo("token2");
+  }
 }

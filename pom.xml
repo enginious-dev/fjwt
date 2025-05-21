@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>it.enginious</groupId>
   <artifactId>fjwt</artifactId>
   <version>3.4.5-SNAPSHOT</version>
   <name>fjwt</name>
   <description>fast and simple JWT authentication library</description>
   <url>https://github.com/enginious-dev/fjwt</url>
-
   <developers>
     <developer>
       <name>Giuseppe Milazzo</name>
@@ -19,25 +16,12 @@
       <organizationUrl>https://www.enginious.it</organizationUrl>
     </developer>
   </developers>
-
   <scm>
     <url>https://github.com/enginious-dev/fjwt.git</url>
   </scm>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.4.5</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <properties>
     <java.release>21</java.release>
+    <importOrder>./importOrder.txt</importOrder>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.projectlombok.lombok.version>1.18.34</org.projectlombok.lombok.version>
     <io.jsonwebtoken.jjwt.version>0.12.6</io.jsonwebtoken.jjwt.version>
@@ -52,7 +36,17 @@
     <org.apache.maven.plugins.maven-javadoc-plugin.version>3.10.1</org.apache.maven.plugins.maven-javadoc-plugin.version>
     <org.apache.maven.plugins.maven-surefire-plugin.version>3.5.1</org.apache.maven.plugins.maven-surefire-plugin.version>
   </properties>
-
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>3.4.5</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <!-- spring -->
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot -->
@@ -79,7 +73,6 @@
       <artifactId>spring-boot-starter-validation</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- other -->
     <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
     <dependency>
@@ -124,7 +117,6 @@
       <version>${commons-io.commons-io.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <!-- test -->
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
     <dependency>
@@ -146,15 +138,122 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
+  <build>
+    <plugins>
+      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-compiler-plugin.version}</version>
+        <configuration>
+          <release>${java.release}</release>
+        </configuration>
+      </plugin>
+      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven-plugin -->
+      <plugin>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-maven-plugin</artifactId>
+        <version>${org.projectlombok.lombok-maven-plugin.version}</version>
+        <dependencies>
+          <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+          <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${org.projectlombok.lombok.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>delombok-sources</id>
+            <goals>
+              <goal>delombok</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sourceDirectory>src/main/java</sourceDirectory>
+              <outputDirectory>${project.build.directory}/delombok</outputDirectory>
+              <addOutputDirectory>false</addOutputDirectory>
+              <encoding>UTF-8</encoding>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-antrun-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-antrun-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>generate-delomboked-sources-jar</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <jar basedir="${project.build.directory}/delombok" destfile="${project.build.directory}/${project.build.finalName}-sources.jar"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/build-helper-maven-plugin -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${org.codehaus.mojo.build-helper-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-delomboked-sources-jar</id>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${project.build.finalName}-sources.jar</file>
+                  <type>jar</type>
+                  <classifier>sources</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-javadoc-plugin.version}</version>
+        <configuration>
+          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-surefire-plugin.version}</version>
+      </plugin>
+    </plugins>
+  </build>
   <profiles>
     <profile>
       <id>sonar</id>
       <properties>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
       </properties>
       <dependencies>
@@ -181,10 +280,66 @@
               </execution>
               <execution>
                 <id>jacoco-site</id>
-                <phase>package</phase>
                 <goals>
                   <goal>report</goal>
                 </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>spotless</id>
+      <activation>
+        <file>
+          <exists>${importOrder}</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <version>2.43.0</version>
+            <configuration>
+              <java>
+                <googleJavaFormat>
+                  <style>GOOGLE</style>
+                  <formatJavadoc>true</formatJavadoc>
+                  <reorderImports>false</reorderImports>
+                </googleJavaFormat>
+                <formatAnnotations/>
+                <importOrder>
+                  <file>${importOrder}</file>
+                  <semanticSort>true</semanticSort>
+                </importOrder>
+              </java>
+              <pom>
+                <includes>
+                  <include>**/pom.xml</include>
+                </includes>
+                <excludes>
+                  <exclude>**/target/**</exclude>
+                </excludes>
+                <sortPom>
+                  <expandEmptyElements>false</expandEmptyElements>
+                  <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
+                  <keepBlankLines>false</keepBlankLines>
+                  <nrOfIndentSpace>2</nrOfIndentSpace>
+                  <indentSchemaLocation>true</indentSchemaLocation>
+                  <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+                </sortPom>
+              </pom>
+            </configuration>
+            <executions>
+              <execution>
+                <id>spotless-validation</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <phase>validate</phase>
               </execution>
             </executions>
           </plugin>
@@ -192,120 +347,4 @@
       </build>
     </profile>
   </profiles>
-
-  <build>
-    <plugins>
-      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${org.apache.maven.plugins.maven-compiler-plugin.version}</version>
-        <configuration>
-          <release>${java.release}</release>
-        </configuration>
-      </plugin>
-
-      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven-plugin -->
-      <plugin>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok-maven-plugin</artifactId>
-        <version>${org.projectlombok.lombok-maven-plugin.version}</version>
-        <dependencies>
-          <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
-          <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${org.projectlombok.lombok.version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>delombok-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>delombok</goal>
-            </goals>
-            <configuration>
-              <sourceDirectory>src/main/java</sourceDirectory>
-              <outputDirectory>${project.build.directory}/delombok</outputDirectory>
-              <addOutputDirectory>false</addOutputDirectory>
-              <encoding>UTF-8</encoding>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-antrun-plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${org.apache.maven.plugins.maven-antrun-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>generate-delomboked-sources-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <jar destfile="${project.build.directory}/${project.build.finalName}-sources.jar"
-                  basedir="${project.build.directory}/delombok"/>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/build-helper-maven-plugin -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>${org.codehaus.mojo.build-helper-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>attach-delomboked-sources-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/${project.build.finalName}-sources.jar</file>
-                  <type>jar</type>
-                  <classifier>sources</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${org.apache.maven.plugins.maven-javadoc-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-        </configuration>
-      </plugin>
-
-      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${org.apache.maven.plugins.maven-surefire-plugin.version}</version>
-      </plugin>
-    </plugins>
-  </build>
 </project>

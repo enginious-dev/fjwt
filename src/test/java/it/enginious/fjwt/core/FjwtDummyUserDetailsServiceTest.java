@@ -1,10 +1,10 @@
 package it.enginious.fjwt.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class FjwtDummyUserDetailsServiceTest {
 

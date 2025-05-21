@@ -4,11 +4,12 @@
 - upgraded to java release 21
 - upgraded dependency of io.github.hakky5/logcaptor to [2.9.3](https://github.com/Hakky54/log-captor/blob/master/CHANGELOG.MD)
 - upgraded dependency of io.jsonwebtoken/jjwt-* to [0.12.6](https://github.com/jwtk/jjwt/blob/master/CHANGELOG.md)
+- added com.diffplug.spotless:spotless-maven-plugin [2.43.0](https://github.com/diffplug/spotless/blob/main/plugin-maven/CHANGES.md#2443---2025-02-20)
 - [[#3](https://github.com/enginious-dev/fjwt/issues/3)] added properties to customize frame option
 - [[#1](https://github.com/enginious-dev/fjwt/issues/1)] upgraded Spring Boot dependencies to 3.3.5
 - [[#5](https://github.com/enginious-dev/fjwt/issues/5)] upgraded Spring Boot dependencies to 3.4.5
 #### Bug Fixes:
-*No bug fixes for this release.*
+- [[#7](https://github.com/enginious-dev/fjwt/issues/7)] fix properties handling to customize frame option & chain bypass for OPTIONS http method calls
 
 ---
 ## v3.2.0 (14/12/2023)

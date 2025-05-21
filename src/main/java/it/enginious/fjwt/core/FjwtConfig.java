@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -22,60 +23,44 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "fjwt")
 public class FjwtConfig {
 
-    /**
-     * Jwt authentication endpoint
-     */
-    private String endpoint = "/authenticate";
+  /** Jwt authentication endpoint */
+  private String endpoint = "/authenticate";
 
-    /**
-     * List of paths that do not need authentication
-     */
-    private List<String> unsecured = new ArrayList<>();
+  /** List of paths that do not need authentication */
+  private List<String> unsecured = new ArrayList<>();
 
-    /**
-     * Jwt token ttl in seconds
-     */
-    private int ttl = 3600;
+  /** Jwt token ttl in seconds */
+  private int ttl = 3600;
 
-    /**
-     * Server secret
-     */
-    private String secret;
+  /** Server secret */
+  private String secret;
 
-    /**
-     * Server timezone, if blank {@link ZoneId#systemDefault()} will be used
-     */
-    private String zoneId;
+  /** Server timezone, if blank {@link ZoneId#systemDefault()} will be used */
+  private String zoneId;
 
-    /**
-     * Signature algorithm
-     */
-    private String algorithm;
+  /** Signature algorithm */
+  private String algorithm;
 
-    /**
-     * Default {@link FjwtClaimsExtractor} enabling flag
-     */
-    private boolean enableDefaultExtractors = true;
+  /** Default {@link FjwtClaimsExtractor} enabling flag */
+  private boolean enableDefaultExtractors = true;
 
-    /**
-     * Frame options
-     */
-    private FrameOptions frameOptions = new FrameOptions();
+  /** Frame options */
+  private FrameOptions frameOptions = new FrameOptions();
 
-    /**
-     * Get all unsecured endpoints (which means this.endpoint + this.unsecured)
-     *
-     * @return all unsecured endpoints
-     */
-    public String[] getAllUnsecuredEndpoints() {
-        return Stream.concat(Arrays.stream(new String[]{getEndpoint()}), getUnsecured().stream())
-                .toArray(String[]::new);
-    }
+  /**
+   * Get all unsecured endpoints (which means this.endpoint + this.unsecured)
+   *
+   * @return all unsecured endpoints
+   */
+  public String[] getAllUnsecuredEndpoints() {
+    return Stream.concat(Arrays.stream(new String[] {getEndpoint()}), getUnsecured().stream())
+        .toArray(String[]::new);
+  }
 
-    @Getter
-    @Setter
-    public static class FrameOptions {
-        private boolean disabled = true;
-        private boolean sameOrigin = true;
-    }
+  @Getter
+  @Setter
+  public static class FrameOptions {
+    private boolean disabled = true;
+    private boolean sameOrigin = false;
+  }
 }

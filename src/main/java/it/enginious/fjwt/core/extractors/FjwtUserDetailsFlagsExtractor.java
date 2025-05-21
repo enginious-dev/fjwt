@@ -2,10 +2,11 @@ package it.enginious.fjwt.core.extractors;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ClaimsBuilder;
-import it.enginious.fjwt.core.FjwtAbstractUserDetailsBuilder;
-import it.enginious.fjwt.core.FjwtClaimsExtractor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import it.enginious.fjwt.core.FjwtAbstractUserDetailsBuilder;
+import it.enginious.fjwt.core.FjwtClaimsExtractor;
 
 /**
  * UserDetails flags extractor, adds all flag in {@link UserDetails} to the token.

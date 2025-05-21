@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 
 class NoopTokenInvalidatorTest {
 
-    private final NoopTokenInvalidator target = new NoopTokenInvalidator();
+  private final NoopTokenInvalidator target = new NoopTokenInvalidator();
 
-    @Test
-    void whenInvokingStoreNoExceptionShouldBeThrown() {
-        assertThatNoException().isThrownBy(() -> target.store(null, null));
-    }
+  @Test
+  void whenInvokingStoreNoExceptionShouldBeThrown() {
+    assertThatNoException().isThrownBy(() -> target.store(null, null));
+  }
 
-    @Test
-    void whenInvokingWasInvalidatedShouldReturnFalse() {
-        assertThat(target.wasInvalidated(null, null)).isFalse();
-    }
+  @Test
+  void whenInvokingWasInvalidatedShouldReturnFalse() {
+    assertThat(target.wasInvalidated(null, null)).isFalse();
+  }
 }

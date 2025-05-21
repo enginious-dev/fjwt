@@ -1,7 +1,8 @@
 package it.enginious.fjwt.core;
 
-import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
 
 /**
  * The logic for token invalidation

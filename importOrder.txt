@@ -1,0 +1,6 @@
+1=static
+2=java
+3=jakarta
+4=javax
+5=
+6=it.enginious

@@ -1,10 +1,12 @@
 package it.enginious.fjwt.core;
 
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -74,6 +76,11 @@ public class FjwtWebSecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth -> auth.requestMatchers(fjwtConfig.getAllUnsecuredEndpoints()).permitAll())
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(
+                        request -> request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name()))
+                    .permitAll())
         .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
         .exceptionHandling(
             exceptionHandlingConfigurer ->
@@ -92,15 +99,15 @@ public class FjwtWebSecurityConfig {
                     frameOptionsConfig.disable();
                   } else {
                     log.debug("frame unchanged since fjwt.frame-options.disabled is set to false");
-                  }
-                  if (Objects.nonNull(fjwtConfig.getFrameOptions())
-                      && fjwtConfig.getFrameOptions().isSameOrigin()) {
-                    log.debug(
-                        "enabling same-origin since fjwt.frame-options.same-origin is set to true");
-                    frameOptionsConfig.sameOrigin();
-                  } else {
-                    log.debug(
-                        "same-origin unchanged since fjwt.frame-options.same-origin is set to false");
+                    if (Objects.nonNull(fjwtConfig.getFrameOptions())
+                        && fjwtConfig.getFrameOptions().isSameOrigin()) {
+                      log.debug(
+                          "enabling same-origin since fjwt.frame-options.same-origin is set to true");
+                      frameOptionsConfig.sameOrigin();
+                    } else {
+                      log.debug(
+                          "same-origin unchanged since fjwt.frame-options.same-origin is set to false");
+                    }
                   }
                 }));
 
