@@ -92,7 +92,7 @@ public class FjwtTokenUtil {
               : StringUtils.repeat("*", StringUtils.length(generatedSecret))),
           algorithmId);
     } else {
-      log.info(
+      log.debug(
           "secret provided: {} will be used",
           (log.isTraceEnabled()
               ? fjwtConfig.getSecret()
@@ -102,7 +102,7 @@ public class FjwtTokenUtil {
     String secret = StringUtils.defaultIfBlank(fjwtConfig.getSecret(), generatedSecret);
 
     this.key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), toJcaName(algorithmId));
-    log.info("validating key strength");
+    log.debug("validating key strength");
     try {
       try (InputStream is = new ByteArrayInputStream(key.getEncoded())) {
         algorithm.digest(new DefaultSecureRequest<>(is, null, null, key));

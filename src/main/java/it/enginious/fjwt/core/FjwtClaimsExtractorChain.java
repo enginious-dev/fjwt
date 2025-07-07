@@ -42,7 +42,7 @@ public class FjwtClaimsExtractorChain {
     if (!CollectionUtils.isEmpty(fjwtClaimsExtractors)) {
       fjwtClaimsExtractors.forEach(
           ce -> {
-            log.info("retrieving claims from user using [{}]", ce.getClass().getName());
+            log.debug("retrieving claims from user using [{}]", ce.getClass().getName());
             ce.getClaims(source, claimsBuilder);
           });
     }
@@ -64,7 +64,7 @@ public class FjwtClaimsExtractorChain {
     if (!CollectionUtils.isEmpty(fjwtClaimsExtractors)) {
       fjwtClaimsExtractors.forEach(
           ce -> {
-            log.info("retrieving claims from token using [{}]", ce.getClass().getName());
+            log.debug("retrieving claims from token using [{}]", ce.getClass().getName());
             ce.addData(source, dest);
           });
     }
