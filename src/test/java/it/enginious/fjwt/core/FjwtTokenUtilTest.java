@@ -107,7 +107,7 @@ class FjwtTokenUtilTest {
   @ParameterizedTest
   @CsvSource({
     "TRACE,secret provided: 8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@ will be used",
-    "INFO,secret provided: ******************************** will be used"
+    "DEBUG,secret provided: ******************************** will be used"
   })
   void whenNotEmptySecretIsSuppliedShouldLogPlaintextOrMaskedSuppliedSecretAccordingToLogLevel(
       String level, String expectedMessage) {
@@ -135,7 +135,7 @@ class FjwtTokenUtilTest {
       given(fjwtConfig.getAlgorithm()).willReturn("HS256");
 
       assertThatNoException().isThrownBy(() -> target.init());
-      assertThat(logCaptor.getInfoLogs()).contains(expectedMessage);
+      assertThat(logCaptor.getDebugLogs()).contains(expectedMessage);
     }
   }
 
