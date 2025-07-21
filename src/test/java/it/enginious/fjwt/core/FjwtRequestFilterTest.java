@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +20,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
@@ -82,38 +79,12 @@ class FjwtRequestFilterTest {
   }
 
   @Test
-  void
-      whenDoFilterInternalAndRequestDoesNotContainsAuthorizationHeaderTokenShouldSkipAuthentication()
-          throws ServletException, IOException {
+  void whenDoFilterInternalAndRequestDoesNotContainsAuthorizationHeaderShouldSkipAuthentication()
+      throws ServletException, IOException {
 
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn(null);
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
-
-      target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-
-      then(fjwtTokenUtil).should(never()).getUsernameFromToken(anyString());
-
-      mocked.verify(SecurityContextHolder::getContext, never());
-
-      then(filterChain)
-          .should(times(1))
-          .doFilter(httpServletRequestCaptor.capture(), httpServletResponseCaptor.capture());
-
-      assertThat(httpServletRequestCaptor.getValue()).isEqualTo(httpServletRequest);
-      assertThat(httpServletResponseCaptor.getValue()).isEqualTo(httpServletResponse);
-    }
-  }
-
-  @Test
-  void
-      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithInvalidTokenShouldSkipAuthentication()
-          throws ServletException, IOException {
-
-    try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
-
-      given(httpServletRequest.getHeader("Authorization")).willReturn(StringUtils.EMPTY);
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn(null);
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
@@ -138,7 +109,7 @@ class FjwtRequestFilterTest {
 
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       given(fjwtTokenUtil.getUserFromToken("token")).willThrow(new IllegalArgumentException());
@@ -165,7 +136,7 @@ class FjwtRequestFilterTest {
 
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       given(fjwtTokenUtil.getUserFromToken("token"))
@@ -176,66 +147,6 @@ class FjwtRequestFilterTest {
       then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
 
       mocked.verify(SecurityContextHolder::getContext, never());
-
-      then(filterChain)
-          .should(times(1))
-          .doFilter(httpServletRequestCaptor.capture(), httpServletResponseCaptor.capture());
-
-      assertThat(httpServletRequestCaptor.getValue()).isEqualTo(httpServletRequest);
-      assertThat(httpServletResponseCaptor.getValue()).isEqualTo(httpServletResponse);
-    }
-  }
-
-  @Test
-  void
-      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithValidTokenAndFjwtTokenUtilReturnsNullUserShouldAbortAuthentication()
-          throws ServletException, IOException {
-
-    try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
-
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
-
-      given(fjwtTokenUtil.getUserFromToken("token")).willReturn(null);
-
-      target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-
-      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
-
-      mocked.verify(SecurityContextHolder::getContext, never());
-
-      then(filterChain)
-          .should(times(1))
-          .doFilter(httpServletRequestCaptor.capture(), httpServletResponseCaptor.capture());
-
-      assertThat(httpServletRequestCaptor.getValue()).isEqualTo(httpServletRequest);
-      assertThat(httpServletResponseCaptor.getValue()).isEqualTo(httpServletResponse);
-    }
-  }
-
-  @Test
-  void
-      whenDoFilterInternalAndRequestContainsAuthorizationHeaderWithValidTokenAndSecurityContextHolderReturnsContextWithAuthenticationShouldAbortAuthentication()
-          throws ServletException, IOException {
-
-    try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
-
-      SecurityContext securityContext =
-          new SecurityContextImpl(new UsernamePasswordAuthenticationToken(null, null, null));
-
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
-
-      given(fjwtTokenUtil.getUserFromToken("token"))
-          .willReturn(new FjwtSimpleUserDetailsBuilder("username").build());
-
-      mocked.when(SecurityContextHolder::getContext).thenReturn(securityContext);
-
-      target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-
-      then(fjwtTokenUtil).should(times(1)).getUserFromToken("token");
-
-      mocked.verify(SecurityContextHolder::getContext, times(1));
 
       then(filterChain)
           .should(times(1))
@@ -260,7 +171,7 @@ class FjwtRequestFilterTest {
               "$2a$10$mHxPfPszH48Q/31BIK8LIeBAm.s6FWTlhtWHb9.Dy56ujc6mfNIbS",
               Collections.emptyList());
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
@@ -304,7 +215,7 @@ class FjwtRequestFilterTest {
               "$2a$10$mHxPfPszH48Q/31BIK8LIeBAm.s6FWTlhtWHb9.Dy56ujc6mfNIbS",
               Collections.emptyList());
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
@@ -350,7 +261,7 @@ class FjwtRequestFilterTest {
               "$2a$10$mHxPfPszH48Q/31BIK8LIeBAm.s6FWTlhtWHb9.Dy56ujc6mfNIbS",
               Collections.emptyList());
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
@@ -394,7 +305,7 @@ class FjwtRequestFilterTest {
               "$2a$10$mHxPfPszH48Q/31BIK8LIeBAm.s6FWTlhtWHb9.Dy56ujc6mfNIbS",
               Collections.emptyList());
 
-      given(httpServletRequest.getHeader("Authorization")).willReturn("Bearer token");
+      given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
       given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);

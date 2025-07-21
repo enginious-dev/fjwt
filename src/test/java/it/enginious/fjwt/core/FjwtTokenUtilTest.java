@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.nio.charset.StandardCharsets;
@@ -14,6 +15,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import javax.crypto.SecretKey;
 
@@ -276,5 +279,26 @@ class FjwtTokenUtilTest {
                     Arrays.asList(
                         new SimpleGrantedAuthority("auth1"), new SimpleGrantedAuthority("auth2")))))
         .isEqualTo(token);
+  }
+
+  @Test
+  void whenGetTokenFromHeaderWithNullHeaderShouldReturnNull() {
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    given(mockHttpServletRequest.getHeader(anyString())).willReturn(null);
+    assertThat(target.getTokenFromHeader(mockHttpServletRequest)).isNull();
+  }
+
+  @Test
+  void whenGetTokenFromHeaderWithInvalidHeaderShouldReturnNull() {
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    given(mockHttpServletRequest.getHeader(anyString())).willReturn("invalid header");
+    assertThat(target.getTokenFromHeader(mockHttpServletRequest)).isNull();
+  }
+
+  @Test
+  void whenGetTokenFromHeaderWithValidHeaderShouldReturnToken() {
+    HttpServletRequest mockHttpServletRequest = mock(HttpServletRequest.class);
+    given(mockHttpServletRequest.getHeader(anyString())).willReturn("Bearer token");
+    assertThat(target.getTokenFromHeader(mockHttpServletRequest)).isEqualTo("token");
   }
 }

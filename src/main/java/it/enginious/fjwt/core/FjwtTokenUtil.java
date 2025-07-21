@@ -11,8 +11,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -43,6 +46,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class FjwtTokenUtil {
+
+  public static final String AUTHORIZATION_HEADER = "Authorization";
+  public static final Pattern TOKEN_PATTERN = Pattern.compile("^Bearer (.+)$");
+  public static final int TOKEN_GROUP = 1;
 
   /** The clock */
   private final Clock clock;
@@ -175,6 +182,34 @@ public class FjwtTokenUtil {
     UserDetails userDetails = builder.build();
     log.debug("user [{}] retrieved from token", userDetails.getUsername());
     return userDetails;
+  }
+
+  /**
+   * Extract token from Authorization header
+   *
+   * @param request the request
+   * @return the token if Authorization header is present and its value matches, null otherwise
+   */
+  public String getTokenFromHeader(HttpServletRequest request) {
+    log.debug("retrieving token from request using header [{}]", AUTHORIZATION_HEADER);
+    String requestTokenHeader = request.getHeader(AUTHORIZATION_HEADER);
+    if (StringUtils.isBlank(requestTokenHeader)) {
+      log.debug("header [{}] not found", AUTHORIZATION_HEADER);
+      return null;
+    }
+    Matcher matcher =
+        TOKEN_PATTERN.matcher(StringUtils.defaultIfBlank(requestTokenHeader, StringUtils.EMPTY));
+    if (matcher.matches()) {
+      log.debug("token matched with pattern [{}]", TOKEN_PATTERN.pattern());
+      UserDetails userDetails = null;
+      String jwtToken = StringUtils.trim(matcher.group(TOKEN_GROUP));
+      log.debug(
+          "token {} retrieved from request using header [{}]", jwtToken, AUTHORIZATION_HEADER);
+      return jwtToken;
+    } else {
+      log.debug("token did not match with pattern [{}]", TOKEN_PATTERN.pattern());
+      return null;
+    }
   }
 
   private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {

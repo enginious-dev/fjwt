@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
@@ -39,10 +37,6 @@ import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
 @Component
 @RequiredArgsConstructor
 public class FjwtRequestFilter extends OncePerRequestFilter {
-
-  private static final String AUTHORIZATION_HEADER = "Authorization";
-  private static final Pattern TOKEN_PATTERN = Pattern.compile("^Bearer (.+)$");
-  private static final int TOKEN_GROUP = 1;
 
   private final FjwtTokenUtil fjwtTokenUtil;
   private final FjwtTokenInvalidator fjwtTokenInvalidator;
@@ -83,16 +77,10 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
   }
 
   private void handleRequest(HttpServletRequest request) {
-    log.debug("retrieving token from request using header [{}]", AUTHORIZATION_HEADER);
-    String requestTokenHeader = request.getHeader(AUTHORIZATION_HEADER);
-    Matcher matcher =
-        TOKEN_PATTERN.matcher(StringUtils.defaultIfBlank(requestTokenHeader, StringUtils.EMPTY));
 
-    if (matcher.matches()) {
-      log.debug("token matched with pattern [{}]", TOKEN_PATTERN.pattern());
+    String jwtToken = fjwtTokenUtil.getTokenFromHeader(request);
+    if (StringUtils.isNotBlank(jwtToken)) {
       UserDetails userDetails = null;
-      String jwtToken = StringUtils.trim(matcher.group(TOKEN_GROUP));
-
       try {
         userDetails = fjwtTokenUtil.getUserFromToken(jwtToken);
       } catch (JwtException | IllegalArgumentException e) {
@@ -116,7 +104,7 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
         }
       }
     } else {
-      log.debug("token did not match with pattern [{}]", TOKEN_PATTERN.pattern());
+      log.debug("unable to extract token");
     }
   }
 
