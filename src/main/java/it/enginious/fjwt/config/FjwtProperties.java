@@ -1,4 +1,4 @@
-package it.enginious.fjwt.core;
+package it.enginious.fjwt.config;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import it.enginious.fjwt.core.FjwtClaimsExtractor;
+
 /**
  * Fjwt configuration parameters.
  *
@@ -21,7 +23,10 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "fjwt")
-public class FjwtConfig {
+public class FjwtProperties {
+
+  /** User source */
+  private UserSourceMode userSource = UserSourceMode.DAO;
 
   /** Jwt authentication endpoint */
   private String endpoint = "/authenticate";
@@ -47,6 +52,9 @@ public class FjwtConfig {
   /** Frame options */
   private FrameOptions frameOptions = new FrameOptions();
 
+  /** Ldap config properties */
+  private LdapConfig ldap = new LdapConfig();
+
   /**
    * Get all unsecured endpoints (which means this.endpoint + this.unsecured)
    *
@@ -62,5 +70,23 @@ public class FjwtConfig {
   public static class FrameOptions {
     private boolean disabled = true;
     private boolean sameOrigin = false;
+  }
+
+  @Getter
+  @Setter
+  public static class LdapConfig {
+    private String[] urls;
+    private String base;
+    private String username;
+    private String password;
+    private String userSearchBase;
+    private String userSearchFilter;
+    private String groupSearchBase;
+    private String groupSearchFilter;
+  }
+
+  public enum UserSourceMode {
+    DAO,
+    LDAP
   }
 }

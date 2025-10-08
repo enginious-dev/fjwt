@@ -1,4 +1,4 @@
-package it.enginious.fjwt.core;
+package it.enginious.fjwt.config;
 
 import java.util.Objects;
 
@@ -7,18 +7,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import it.enginious.fjwt.core.FjwtEntryPoint;
+import it.enginious.fjwt.core.FjwtRequestFilter;
 
 /**
  * Fjwt web security configuration.
@@ -35,28 +33,7 @@ public class FjwtWebSecurityConfig {
 
   private final FjwtEntryPoint fjwtEntryPoint;
   private final FjwtRequestFilter fjwtRequestFilter;
-  private final FjwtConfig fjwtConfig;
-
-  /**
-   * register the {@link AuthenticationManager}
-   *
-   * @param passwordEncoder the password encoder
-   * @param userDetailsService the user details service
-   * @return the authentication manager bean
-   */
-  @Bean
-  public AuthenticationManager authenticationManager(
-      PasswordEncoder passwordEncoder, UserDetailsService userDetailsService) {
-    log.debug(
-        "configuring [{}] with userDetailsService as [{}] and passwordEncoder as [{}]",
-        AuthenticationManager.class.getName(),
-        userDetailsService.getClass().getName(),
-        passwordEncoder.getClass().getName());
-    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-    authenticationProvider.setUserDetailsService(userDetailsService);
-    authenticationProvider.setPasswordEncoder(passwordEncoder);
-    return new ProviderManager(authenticationProvider);
-  }
+  private final FjwtProperties fjwtProperties;
 
   /**
    * register the {@link SecurityFilterChain}
@@ -70,12 +47,12 @@ public class FjwtWebSecurityConfig {
     log.debug(
         "configuring [{}]: paths that don't need authentication are [{}]",
         HttpSecurity.class.getName(),
-        String.join(", ", fjwtConfig.getAllUnsecuredEndpoints()));
+        String.join(", ", fjwtProperties.getAllUnsecuredEndpoints()));
 
     httpSecurity
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            auth -> auth.requestMatchers(fjwtConfig.getAllUnsecuredEndpoints()).permitAll())
+            auth -> auth.requestMatchers(fjwtProperties.getAllUnsecuredEndpoints()).permitAll())
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
@@ -93,14 +70,14 @@ public class FjwtWebSecurityConfig {
         httpSecurityHeadersConfigurer ->
             httpSecurityHeadersConfigurer.frameOptions(
                 frameOptionsConfig -> {
-                  if (Objects.nonNull(fjwtConfig.getFrameOptions())
-                      && fjwtConfig.getFrameOptions().isDisabled()) {
+                  if (Objects.nonNull(fjwtProperties.getFrameOptions())
+                      && fjwtProperties.getFrameOptions().isDisabled()) {
                     log.debug("disabling frame since fjwt.frame-options.disabled is set to true");
                     frameOptionsConfig.disable();
                   } else {
                     log.debug("frame unchanged since fjwt.frame-options.disabled is set to false");
-                    if (Objects.nonNull(fjwtConfig.getFrameOptions())
-                        && fjwtConfig.getFrameOptions().isSameOrigin()) {
+                    if (Objects.nonNull(fjwtProperties.getFrameOptions())
+                        && fjwtProperties.getFrameOptions().isSameOrigin()) {
                       log.debug(
                           "enabling same-origin since fjwt.frame-options.same-origin is set to true");
                       frameOptionsConfig.sameOrigin();

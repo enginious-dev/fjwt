@@ -1,4 +1,6 @@
-package it.enginious.fjwt.core;
+package it.enginious.fjwt.config;
+
+import static it.enginious.fjwt.config.FjwtConfigCommon.DEFAULT_BEAN_REGISTRATION_PATTERN;
 
 import java.time.Clock;
 import java.time.ZoneId;
@@ -17,6 +19,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import it.enginious.fjwt.core.FjwtClaimsExtractor;
+import it.enginious.fjwt.core.FjwtClaimsExtractorChain;
+import it.enginious.fjwt.core.FjwtSimpleUserDetailsBuilder;
+import it.enginious.fjwt.core.FjwtTokenInvalidator;
+import it.enginious.fjwt.core.FjwtUserDetailsBuilderFactory;
+import it.enginious.fjwt.core.NoopTokenInvalidator;
 import it.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
 import it.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
 
@@ -33,43 +41,8 @@ import it.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
 @Configuration
 public class FjwtSecurityConfig {
 
-  private static final String DEFAULT_BEAN_REGISTRATION_PATTERN =
-      "registering bean of type [{}] as default [{}]";
   private static final String DEFAULT_EXTRACTORS_BEAN_REGISTRATION_PATTERN =
       "registering bean of type [{}] as default [{}], if you want to exclude the default extractors set the property fjwt.enableDefaultExtractors to false";
-
-  /**
-   * register the default {@link PasswordEncoder}
-   *
-   * @return the default password encoder bean
-   */
-  @Bean
-  @ConditionalOnMissingBean(PasswordEncoder.class)
-  public PasswordEncoder passwordEncoder() {
-
-    log.debug(
-        DEFAULT_BEAN_REGISTRATION_PATTERN,
-        BCryptPasswordEncoder.class.getName(),
-        PasswordEncoder.class.getName());
-    return new BCryptPasswordEncoder();
-  }
-
-  /**
-   * register the default {@link UserDetailsService}
-   *
-   * @param passwordEncoder the password encoder
-   * @return the default user details service bean
-   */
-  @Bean
-  @ConditionalOnMissingBean(UserDetailsService.class)
-  public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-
-    log.warn(
-        "registering bean of type [{}] as default [{}]: you should use this bean for testing purposes only",
-        FjwtDummyUserDetailsService.class.getName(),
-        UserDetailsService.class.getName());
-    return new FjwtDummyUserDetailsService(passwordEncoder);
-  }
 
   /**
    * register the default {@link FjwtClaimsExtractorChain}

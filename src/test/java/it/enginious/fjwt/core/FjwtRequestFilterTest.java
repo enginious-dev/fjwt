@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import it.enginious.fjwt.config.FjwtProperties;
 import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +37,7 @@ class FjwtRequestFilterTest {
 
   @Mock private FjwtTokenInvalidator fjwtTokenInvalidator;
 
-  @Mock private FjwtConfig fjwtConfig;
+  @Mock private FjwtProperties fjwtProperties;
 
   @Mock private FilterChain filterChain;
 
@@ -50,7 +51,7 @@ class FjwtRequestFilterTest {
 
   @BeforeEach
   void setUp() {
-    doReturn(new String[] {"/authenticate"}).when(fjwtConfig).getAllUnsecuredEndpoints();
+    doReturn(new String[] {"/authenticate"}).when(fjwtProperties).getAllUnsecuredEndpoints();
     target.init();
   }
 

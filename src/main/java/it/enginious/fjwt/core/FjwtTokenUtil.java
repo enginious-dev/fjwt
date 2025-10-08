@@ -36,6 +36,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import it.enginious.fjwt.config.FjwtProperties;
+
 /**
  * Jwt token utilities.
  *
@@ -55,7 +57,7 @@ public class FjwtTokenUtil {
   private final Clock clock;
 
   /** Fjwt configuration */
-  private final FjwtConfig fjwtConfig;
+  private final FjwtProperties fjwtProperties;
 
   /** Claims extractor chain */
   private final FjwtClaimsExtractorChain claimsExtractorChain;
@@ -71,11 +73,11 @@ public class FjwtTokenUtil {
   protected void init() {
 
     String algorithmId =
-        StringUtils.defaultIfBlank(fjwtConfig.getAlgorithm(), Jwts.SIG.HS256.getId());
+        StringUtils.defaultIfBlank(fjwtProperties.getAlgorithm(), Jwts.SIG.HS256.getId());
 
     SecureDigestAlgorithm algorithm = Jwts.SIG.get().forKey(algorithmId);
 
-    if (Objects.isNull(fjwtConfig.getAlgorithm())) {
+    if (Objects.isNull(fjwtProperties.getAlgorithm())) {
       log.warn("no algorithm provided: {} will be used", algorithmId);
     }
     byte[] encoded;
@@ -91,7 +93,7 @@ public class FjwtTokenUtil {
     String generatedSecret =
         new String(Base64.getEncoder().encode(encoded), StandardCharsets.UTF_8);
 
-    if (StringUtils.isBlank(fjwtConfig.getSecret())) {
+    if (StringUtils.isBlank(fjwtProperties.getSecret())) {
       log.warn(
           "no secret provided: {} (generated with algorithm {}) will be used",
           (log.isTraceEnabled()
@@ -102,11 +104,11 @@ public class FjwtTokenUtil {
       log.debug(
           "secret provided: {} will be used",
           (log.isTraceEnabled()
-              ? fjwtConfig.getSecret()
-              : StringUtils.repeat("*", StringUtils.length(fjwtConfig.getSecret()))));
+              ? fjwtProperties.getSecret()
+              : StringUtils.repeat("*", StringUtils.length(fjwtProperties.getSecret()))));
     }
 
-    String secret = StringUtils.defaultIfBlank(fjwtConfig.getSecret(), generatedSecret);
+    String secret = StringUtils.defaultIfBlank(fjwtProperties.getSecret(), generatedSecret);
 
     this.key = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), toJcaName(algorithmId));
     log.debug("validating key strength");
@@ -236,7 +238,7 @@ public class FjwtTokenUtil {
         .claims(claims)
         .subject(subject)
         .issuedAt(now)
-        .expiration(DateUtils.addSeconds(now, fjwtConfig.getTtl()))
+        .expiration(DateUtils.addSeconds(now, fjwtProperties.getTtl()))
         .signWith(key)
         .compact();
   }
@@ -245,8 +247,8 @@ public class FjwtTokenUtil {
     return Date.from(
         LocalDateTime.now(clock)
             .atZone(
-                StringUtils.isNotBlank(fjwtConfig.getZoneId())
-                    ? ZoneId.of(fjwtConfig.getZoneId())
+                StringUtils.isNotBlank(fjwtProperties.getZoneId())
+                    ? ZoneId.of(fjwtProperties.getZoneId())
                     : ZoneId.systemDefault())
             .toInstant());
   }

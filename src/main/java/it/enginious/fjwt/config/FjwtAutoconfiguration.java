@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @Slf4j
 @AutoConfiguration
-@ComponentScan(basePackages = "it.enginious.fjwt.core")
+@ComponentScan(basePackages = {"it.enginious.fjwt.config", "it.enginious.fjwt.core"})
 public class FjwtAutoconfiguration {
 
   /** Logs if the configuration has been loaded into the context. */

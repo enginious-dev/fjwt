@@ -6,12 +6,14 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-class FjwtConfigTest {
+import it.enginious.fjwt.config.FjwtProperties;
+
+class FjwtPropertiesTest {
 
   @Test
   void testAccessor() {
 
-    FjwtConfig target = new FjwtConfig();
+    FjwtProperties target = new FjwtProperties();
 
     target.setEndpoint("/endpoint");
     target.setUnsecured(Arrays.asList("/unsecured1", "/unsecured2"));

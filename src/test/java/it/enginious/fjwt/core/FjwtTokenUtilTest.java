@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import it.enginious.fjwt.config.FjwtProperties;
 import it.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +48,7 @@ class FjwtTokenUtilTest {
 
   private FjwtTokenUtil target;
 
-  @Mock private FjwtConfig fjwtConfig;
+  @Mock private FjwtProperties fjwtProperties;
 
   @Mock private Clock clock;
 
@@ -67,7 +68,7 @@ class FjwtTokenUtilTest {
     target =
         new FjwtTokenUtil(
             clock,
-            fjwtConfig,
+            fjwtProperties,
             new FjwtClaimsExtractorChain(Collections.singletonList(new FjwtAuthoritiesExtractor())),
             FjwtSimpleUserDetailsBuilder::new);
   }
@@ -99,8 +100,8 @@ class FjwtTokenUtilTest {
       given(encoder.encode(any(byte[].class)))
           .willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@".getBytes(StandardCharsets.UTF_8));
 
-      given(fjwtConfig.getSecret()).willReturn("");
-      given(fjwtConfig.getAlgorithm()).willReturn("HS256");
+      given(fjwtProperties.getSecret()).willReturn("");
+      given(fjwtProperties.getAlgorithm()).willReturn("HS256");
 
       assertThatNoException().isThrownBy(() -> target.init());
       assertThat(logCaptor.getWarnLogs()).contains(expectedMessage);
@@ -134,8 +135,8 @@ class FjwtTokenUtilTest {
       given(encoder.encode(any(byte[].class)))
           .willReturn("MbQeThWmZq4t7w!z%C*F)J@NcRfUjXn2".getBytes(StandardCharsets.UTF_8));
 
-      given(fjwtConfig.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
-      given(fjwtConfig.getAlgorithm()).willReturn("HS256");
+      given(fjwtProperties.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
+      given(fjwtProperties.getAlgorithm()).willReturn("HS256");
 
       assertThatNoException().isThrownBy(() -> target.init());
       assertThat(logCaptor.getDebugLogs()).contains(expectedMessage);
@@ -148,8 +149,8 @@ class FjwtTokenUtilTest {
       mockedBase64.when(Base64::getEncoder).thenReturn(encoder);
       given(encoder.encode(any(byte[].class)))
           .willReturn("MbQeThWmZq4t7w!z%C*F)J@NcRfUjXn2".getBytes(StandardCharsets.UTF_8));
-      given(fjwtConfig.getSecret()).willReturn("weak_secret");
-      given(fjwtConfig.getAlgorithm()).willReturn("HS256");
+      given(fjwtProperties.getSecret()).willReturn("weak_secret");
+      given(fjwtProperties.getAlgorithm()).willReturn("HS256");
       assertThatThrownBy(() -> target.init())
           .isExactlyInstanceOf(IllegalStateException.class)
           .hasMessage("fjwt key validation failed")
@@ -176,8 +177,8 @@ class FjwtTokenUtilTest {
       given(encoder.encode(any(byte[].class)))
           .willReturn("MbQeThWmZq4t7w!z%C*F)J@NcRfUjXn2".getBytes(StandardCharsets.UTF_8));
 
-      given(fjwtConfig.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
-      given(fjwtConfig.getAlgorithm()).willReturn(null);
+      given(fjwtProperties.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
+      given(fjwtProperties.getAlgorithm()).willReturn(null);
 
       assertThatNoException().isThrownBy(() -> target.init());
       assertThat(logCaptor.getWarnLogs()).contains("no algorithm provided: HS256 will be used");
@@ -203,9 +204,9 @@ class FjwtTokenUtilTest {
       given(encoder.encode(any(byte[].class)))
           .willReturn("MbQeThWmZq4t7w!z%C*F)J@NcRfUjXn2".getBytes(StandardCharsets.UTF_8));
 
-      given(fjwtConfig.getSecret())
+      given(fjwtProperties.getSecret())
           .willReturn("dRgUkXp2s5v8y/A?D(G+KbPeShVmYq3t6w9z$C&E)H@McQfTjWnZr4u7x!A%D*G-");
-      given(fjwtConfig.getAlgorithm()).willReturn("HS512");
+      given(fjwtProperties.getAlgorithm()).willReturn("HS512");
 
       assertThatNoException().isThrownBy(() -> target.init());
       assertThat(logCaptor.getWarnLogs())
@@ -224,9 +225,9 @@ class FjwtTokenUtilTest {
     String token =
         "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwfQ.VGjklZbsJKzM2CQAanAXkLD81a4Az9OR2Cuhk2CoCcE";
 
-    given(fjwtConfig.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
+    given(fjwtProperties.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
 
-    given(fjwtConfig.getAlgorithm()).willReturn("HS256");
+    given(fjwtProperties.getAlgorithm()).willReturn("HS256");
 
     given(clock.instant()).willReturn(Instant.ofEpochMilli(1635339600000L));
 
@@ -241,9 +242,9 @@ class FjwtTokenUtilTest {
     String token =
         "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImV4cCI6MTYzNTM0MzIwMCwiaWF0IjoxNjM1MzM5NjAwfQ.VGjklZbsJKzM2CQAanAXkLD81a4Az9OR2Cuhk2CoCcE";
 
-    given(fjwtConfig.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
+    given(fjwtProperties.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
 
-    given(fjwtConfig.getAlgorithm()).willReturn("HS256");
+    given(fjwtProperties.getAlgorithm()).willReturn("HS256");
 
     given(clock.instant()).willReturn(Instant.ofEpochMilli(1635339600000L));
 
@@ -263,11 +264,11 @@ class FjwtTokenUtilTest {
 
     given(clock.getZone()).willReturn(ZoneId.systemDefault());
 
-    given(fjwtConfig.getTtl()).willReturn(3600);
+    given(fjwtProperties.getTtl()).willReturn(3600);
 
-    given(fjwtConfig.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
+    given(fjwtProperties.getSecret()).willReturn("8x/A?D(G+KbPeShVmYq3t6w9y$B&E)H@");
 
-    given(fjwtConfig.getAlgorithm()).willReturn("HS256");
+    given(fjwtProperties.getAlgorithm()).willReturn("HS256");
 
     target.init();
 

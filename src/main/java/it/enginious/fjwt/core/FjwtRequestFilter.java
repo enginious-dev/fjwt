@@ -24,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import it.enginious.fjwt.config.FjwtProperties;
 import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
 
 /**
@@ -40,14 +41,14 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
 
   private final FjwtTokenUtil fjwtTokenUtil;
   private final FjwtTokenInvalidator fjwtTokenInvalidator;
-  private final FjwtConfig fjwtConfig;
+  private final FjwtProperties fjwtProperties;
   private List<AntPathRequestMatcher> unsecuredEndpointsMatchers;
 
   /** initialize this bean, see {@link PostConstruct} */
   @PostConstruct
   public void init() {
     unsecuredEndpointsMatchers =
-        Arrays.stream(fjwtConfig.getAllUnsecuredEndpoints())
+        Arrays.stream(fjwtProperties.getAllUnsecuredEndpoints())
             .map(AntPathRequestMatcher::new)
             .toList();
   }

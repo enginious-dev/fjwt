@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.enginious.fjwt.config.FjwtProperties;
 import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
 import it.enginious.fjwt.dto.FjwtRequest;
 import it.enginious.fjwt.dto.FjwtResponse;
@@ -36,7 +37,7 @@ public class FjwtController {
   private final FjwtTokenInvalidator fjwtTokenInvalidator;
 
   /**
-   * Authentication endpoint, you can set this path through {@link FjwtConfig#endpoint}.
+   * Authentication endpoint, you can set this path through {@link FjwtProperties#endpoint}.
    *
    * @param request a {@link FjwtRequest}
    * @return the authentication response which is {@link HttpStatus#OK} in case of success and
