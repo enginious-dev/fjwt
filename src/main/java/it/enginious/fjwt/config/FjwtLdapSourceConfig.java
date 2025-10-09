@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +63,12 @@ public class FjwtLdapSourceConfig {
     };
   }
 
+  /**
+   * register an LDAP context source {@link LdapContextSource}
+   *
+   * @param ldapConnectionDetails the LdapConnectionDetails
+   * @return the LDAP context source bean
+   */
   @Bean
   public LdapContextSource ldapContextSource(LdapConnectionDetails ldapConnectionDetails) {
     var ldapContextSource =
@@ -72,6 +79,12 @@ public class FjwtLdapSourceConfig {
     return ldapContextSource;
   }
 
+  /**
+   * register a bind authenticator {@link BindAuthenticator}
+   *
+   * @param ldapContextSource the LdapContextSource
+   * @return the bind authenticator bean
+   */
   @Bean
   public BindAuthenticator bindAuthenticator(LdapContextSource ldapContextSource) {
     var authenticator = new BindAuthenticator(ldapContextSource);
@@ -83,7 +96,14 @@ public class FjwtLdapSourceConfig {
     return authenticator;
   }
 
+  /**
+   * register an LDAP authorities populator {@link LdapAuthoritiesPopulator}
+   *
+   * @param ldapContextSource the LdapContextSource
+   * @return the LDAP authorities populator bean
+   */
   @Bean
+  @ConditionalOnMissingBean(LdapAuthoritiesPopulator.class)
   public LdapAuthoritiesPopulator ldapAuthoritiesPopulator(LdapContextSource ldapContextSource) {
     var ldapAuthoritiesPopulator =
         new DefaultLdapAuthoritiesPopulator(
@@ -95,7 +115,8 @@ public class FjwtLdapSourceConfig {
   /**
    * register an LDAP-based {@link LdapConnectionDetails}
    *
-   * @param ldapConnectionDetails the LdapConnectionDetails
+   * @param bindAuthenticator the BindAuthenticator
+   * @param ldapAuthoritiesPopulator the LdapAuthoritiesPopulator
    * @return the authentication manager bean
    */
   @Bean

@@ -161,96 +161,23 @@
           <release>${java.release}</release>
         </configuration>
       </plugin>
-      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven-plugin -->
-      <!--      <plugin>-->
-      <!--        <groupId>org.projectlombok</groupId>-->
-      <!--        <artifactId>lombok-maven-plugin</artifactId>-->
-      <!--        <version>${org.projectlombok.lombok-maven-plugin.version}</version>-->
-      <!--        <dependencies>-->
-      <!--          &lt;!&ndash; https://mvnrepository.com/artifact/org.projectlombok/lombok &ndash;&gt;-->
-      <!--          <dependency>-->
-      <!--            <groupId>org.projectlombok</groupId>-->
-      <!--            <artifactId>lombok</artifactId>-->
-      <!--            <version>${org.projectlombok.lombok.version}</version>-->
-      <!--          </dependency>-->
-      <!--        </dependencies>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <id>delombok-sources</id>-->
-      <!--            <goals>-->
-      <!--              <goal>delombok</goal>-->
-      <!--            </goals>-->
-      <!--            <phase>generate-sources</phase>-->
-      <!--            <configuration>-->
-      <!--              <sourceDirectory>src/main/java</sourceDirectory>-->
-      <!--              <outputDirectory>${project.build.directory}/delombok</outputDirectory>-->
-      <!--              <addOutputDirectory>false</addOutputDirectory>-->
-      <!--              <encoding>UTF-8</encoding>-->
-      <!--            </configuration>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
-      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-antrun-plugin -->
-      <!--      <plugin>-->
-      <!--        <groupId>org.apache.maven.plugins</groupId>-->
-      <!--        <artifactId>maven-antrun-plugin</artifactId>-->
-      <!--        <version>${org.apache.maven.plugins.maven-antrun-plugin.version}</version>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <id>generate-delomboked-sources-jar</id>-->
-      <!--            <goals>-->
-      <!--              <goal>run</goal>-->
-      <!--            </goals>-->
-      <!--            <phase>package</phase>-->
-      <!--            <configuration>-->
-      <!--              <target>-->
-      <!--                <jar basedir="${project.build.directory}/delombok" destfile="${project.build.directory}/${project.build.finalName}-sources.jar"/>-->
-      <!--              </target>-->
-      <!--            </configuration>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
-      <!--      &lt;!&ndash; https://mvnrepository.com/artifact/org.codehaus.mojo/build-helper-maven-plugin &ndash;&gt;-->
-      <!--      <plugin>-->
-      <!--        <groupId>org.codehaus.mojo</groupId>-->
-      <!--        <artifactId>build-helper-maven-plugin</artifactId>-->
-      <!--        <version>${org.codehaus.mojo.build-helper-maven-plugin.version}</version>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <id>attach-delomboked-sources-jar</id>-->
-      <!--            <goals>-->
-      <!--              <goal>attach-artifact</goal>-->
-      <!--            </goals>-->
-      <!--            <phase>package</phase>-->
-      <!--            <configuration>-->
-      <!--              <artifacts>-->
-      <!--                <artifact>-->
-      <!--                  <file>${project.build.directory}/${project.build.finalName}-sources.jar</file>-->
-      <!--                  <type>jar</type>-->
-      <!--                  <classifier>sources</classifier>-->
-      <!--                </artifact>-->
-      <!--              </artifacts>-->
-      <!--            </configuration>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
       <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
-      <!--      <plugin>-->
-      <!--        <groupId>org.apache.maven.plugins</groupId>-->
-      <!--        <artifactId>maven-javadoc-plugin</artifactId>-->
-      <!--        <version>${org.apache.maven.plugins.maven-javadoc-plugin.version}</version>-->
-      <!--        <configuration>-->
-      <!--          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>-->
-      <!--        </configuration>-->
-      <!--        <executions>-->
-      <!--          <execution>-->
-      <!--            <id>attach-javadocs</id>-->
-      <!--            <goals>-->
-      <!--              <goal>jar</goal>-->
-      <!--            </goals>-->
-      <!--          </execution>-->
-      <!--        </executions>-->
-      <!--      </plugin>-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-javadoc-plugin.version}</version>
+        <configuration>
+          <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
