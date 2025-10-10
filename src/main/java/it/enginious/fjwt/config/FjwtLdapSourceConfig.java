@@ -18,6 +18,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
+import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 
 /**
  * Fjwt ldap source configuration.
@@ -113,6 +114,17 @@ public class FjwtLdapSourceConfig {
   }
 
   /**
+   * register an Ldap user details mapper {@link LdapUserDetailsMapper}
+   *
+   * @return the LDAP user detail mapper bean
+   */
+  @Bean
+  @ConditionalOnMissingBean(LdapUserDetailsMapper.class)
+  public LdapUserDetailsMapper ldapUserDetailsMapper() {
+    return new LdapUserDetailsMapper();
+  }
+
+  /**
    * register an LDAP-based {@link LdapConnectionDetails}
    *
    * @param bindAuthenticator the BindAuthenticator
@@ -121,8 +133,11 @@ public class FjwtLdapSourceConfig {
    */
   @Bean
   public AuthenticationManager authenticationManager(
-      BindAuthenticator bindAuthenticator, LdapAuthoritiesPopulator ldapAuthoritiesPopulator) {
+      BindAuthenticator bindAuthenticator,
+      LdapAuthoritiesPopulator ldapAuthoritiesPopulator,
+      LdapUserDetailsMapper ldapUserDetailsMapper) {
     var provider = new LdapAuthenticationProvider(bindAuthenticator, ldapAuthoritiesPopulator);
+    provider.setUserDetailsContextMapper(ldapUserDetailsMapper);
     return new ProviderManager(provider);
   }
 }
