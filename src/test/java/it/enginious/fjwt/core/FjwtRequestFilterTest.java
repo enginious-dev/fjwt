@@ -20,6 +20,8 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.http.HttpMethod;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
@@ -41,9 +43,8 @@ class FjwtRequestFilterTest {
 
   @Mock private FilterChain filterChain;
 
-  @Mock private HttpServletRequest httpServletRequest;
-
-  @Mock private HttpServletResponse httpServletResponse;
+  private MockHttpServletRequest httpServletRequest;
+  private MockHttpServletResponse httpServletResponse;
 
   @Captor private ArgumentCaptor<HttpServletRequest> httpServletRequestCaptor;
 
@@ -53,6 +54,9 @@ class FjwtRequestFilterTest {
   void setUp() {
     doReturn(new String[] {"/authenticate"}).when(fjwtProperties).getAllUnsecuredEndpoints();
     target.init();
+
+    httpServletRequest = new MockHttpServletRequest();
+    httpServletResponse = new MockHttpServletResponse();
   }
 
   @Test
@@ -60,11 +64,10 @@ class FjwtRequestFilterTest {
       throws IOException, ServletException {
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.OPTIONS.name());
+      httpServletRequest.setMethod(HttpMethod.OPTIONS.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-
-      then(httpServletRequest).should(never()).getHeader(anyString());
 
       then(fjwtTokenUtil).should(never()).getUsernameFromToken(anyString());
 
@@ -86,7 +89,8 @@ class FjwtRequestFilterTest {
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn(null);
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       target.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 
@@ -111,7 +115,8 @@ class FjwtRequestFilterTest {
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       given(fjwtTokenUtil.getUserFromToken("token")).willThrow(new IllegalArgumentException());
 
@@ -138,7 +143,8 @@ class FjwtRequestFilterTest {
     try (MockedStatic<SecurityContextHolder> mocked = mockStatic(SecurityContextHolder.class)) {
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       given(fjwtTokenUtil.getUserFromToken("token"))
           .willThrow(new ExpiredJwtException(null, null, null));
@@ -173,7 +179,8 @@ class FjwtRequestFilterTest {
               Collections.emptyList());
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
 
@@ -217,7 +224,8 @@ class FjwtRequestFilterTest {
               Collections.emptyList());
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
 
@@ -263,7 +271,8 @@ class FjwtRequestFilterTest {
               Collections.emptyList());
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
 
@@ -307,7 +316,8 @@ class FjwtRequestFilterTest {
               Collections.emptyList());
 
       given(fjwtTokenUtil.getTokenFromHeader(httpServletRequest)).willReturn("token");
-      given(httpServletRequest.getMethod()).willReturn(HttpMethod.GET.name());
+      httpServletRequest.setMethod(HttpMethod.GET.name());
+      httpServletRequest.setRequestURI("/securedEndpoint");
 
       given(fjwtTokenUtil.getUserFromToken("token")).willReturn(user);
 

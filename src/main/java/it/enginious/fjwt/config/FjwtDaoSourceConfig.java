@@ -85,8 +85,8 @@ public class FjwtDaoSourceConfig {
         AuthenticationManager.class.getName(),
         userDetailsService.getClass().getName(),
         passwordEncoder.getClass().getName());
-    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-    authenticationProvider.setUserDetailsService(userDetailsService);
+    DaoAuthenticationProvider authenticationProvider =
+        new DaoAuthenticationProvider(userDetailsService);
     authenticationProvider.setPasswordEncoder(passwordEncoder);
     return new ProviderManager(authenticationProvider);
   }

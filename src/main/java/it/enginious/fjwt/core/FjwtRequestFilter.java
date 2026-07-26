@@ -20,7 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -42,15 +42,14 @@ public class FjwtRequestFilter extends OncePerRequestFilter {
   private final FjwtTokenUtil fjwtTokenUtil;
   private final FjwtTokenInvalidator fjwtTokenInvalidator;
   private final FjwtProperties fjwtProperties;
-  private List<AntPathRequestMatcher> unsecuredEndpointsMatchers;
+  private List<PathPatternRequestMatcher> unsecuredEndpointsMatchers;
 
   /** initialize this bean, see {@link PostConstruct} */
   @PostConstruct
   public void init() {
+    PathPatternRequestMatcher.Builder builder = PathPatternRequestMatcher.withDefaults();
     unsecuredEndpointsMatchers =
-        Arrays.stream(fjwtProperties.getAllUnsecuredEndpoints())
-            .map(AntPathRequestMatcher::new)
-            .toList();
+        Arrays.stream(fjwtProperties.getAllUnsecuredEndpoints()).map(builder::matcher).toList();
   }
 
   @Override

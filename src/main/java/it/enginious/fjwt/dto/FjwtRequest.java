@@ -18,8 +18,7 @@ import lombok.*;
 public class FjwtRequest {
 
   /** The username */
-  @NotBlank(message = "username is mandatory")
-  private String username;
+  @NotBlank(message = "username is mandatory") private String username;
 
   /** The password */
   private String password;

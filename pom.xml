@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>it.enginious</groupId>
   <artifactId>fjwt</artifactId>
-  <version>3.5.3-SNAPSHOT</version>
+  <version>4.1.0</version>
   <name>fjwt</name>
   <description>fast and simple JWT authentication library</description>
   <url>https://github.com/enginious-dev/fjwt</url>
@@ -20,10 +20,10 @@
     <url>https://github.com/enginious-dev/fjwt.git</url>
   </scm>
   <properties>
-    <java.release>21</java.release>
+    <java.release>25</java.release>
     <importOrder>./importOrder.txt</importOrder>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.projectlombok.lombok.version>1.18.34</org.projectlombok.lombok.version>
+    <org.projectlombok.lombok.version>1.18.46</org.projectlombok.lombok.version>
     <io.jsonwebtoken.jjwt.version>0.12.6</io.jsonwebtoken.jjwt.version>
     <commons-io.commons-io.version>2.17.0</commons-io.commons-io.version>
     <org.mockito.mockito-inline.version>5.2.0</org.mockito.mockito-inline.version>
@@ -35,13 +35,15 @@
     <org.codehaus.mojo.build-helper-maven-plugin.version>3.6.0</org.codehaus.mojo.build-helper-maven-plugin.version>
     <org.apache.maven.plugins.maven-javadoc-plugin.version>3.10.1</org.apache.maven.plugins.maven-javadoc-plugin.version>
     <org.apache.maven.plugins.maven-surefire-plugin.version>3.5.1</org.apache.maven.plugins.maven-surefire-plugin.version>
+    <com.diffplug.spotless.spotless-maven-plugin.version>3.8.0</com.diffplug.spotless.spotless-maven-plugin.version>
+    <com.google.googlejavaformat.google-java-format.version>1.35.0</com.google.googlejavaformat.google-java-format.version>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.5.3</version>
+        <version>4.1.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -142,6 +144,12 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webmvc-test -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/io.github.hakky54/logcaptor -->
     <dependency>
       <groupId>io.github.hakky54</groupId>
@@ -161,10 +169,17 @@
           <release>${java.release}</release>
           <debug>true</debug>
           <debuglevel>lines,vars,source</debuglevel>
-          <compileSourceRoots>
-            <compileSourceRoot>${project.build.directory}/delombok</compileSourceRoot>
-          </compileSourceRoots>
         </configuration>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <compileSourceRoots>
+                <compileSourceRoot>${project.build.directory}/delombok</compileSourceRoot>
+              </compileSourceRoots>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-maven-plugin -->
       <plugin>
@@ -321,10 +336,11 @@
           <plugin>
             <groupId>com.diffplug.spotless</groupId>
             <artifactId>spotless-maven-plugin</artifactId>
-            <version>2.43.0</version>
+            <version>${com.diffplug.spotless.spotless-maven-plugin.version}</version>
             <configuration>
               <java>
                 <googleJavaFormat>
+                  <version>${com.google.googlejavaformat.google-java-format.version}</version>
                   <style>GOOGLE</style>
                   <formatJavadoc>true</formatJavadoc>
                   <reorderImports>false</reorderImports>
@@ -347,7 +363,7 @@
                   <spaceBeforeCloseEmptyElement>false</spaceBeforeCloseEmptyElement>
                   <keepBlankLines>false</keepBlankLines>
                   <nrOfIndentSpace>2</nrOfIndentSpace>
-                  <indentSchemaLocation>true</indentSchemaLocation>
+                  <indentAttribute>schemaLocation</indentAttribute>
                   <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
                 </sortPom>
               </pom>
