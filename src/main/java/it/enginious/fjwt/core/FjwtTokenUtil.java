@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,11 @@ import it.enginious.fjwt.config.FjwtProperties;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(
+    prefix = "fjwt",
+    name = "security-mode",
+    havingValue = "LEGACY_JWT",
+    matchIfMissing = true)
 @RequiredArgsConstructor
 public class FjwtTokenUtil {
 

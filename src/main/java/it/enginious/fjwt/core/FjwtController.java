@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,11 @@ import it.enginious.fjwt.dto.FjwtResponse;
 @Slf4j
 @CrossOrigin
 @RestController
+@ConditionalOnProperty(
+    prefix = "fjwt",
+    name = "security-mode",
+    havingValue = "LEGACY_JWT",
+    matchIfMissing = true)
 @RequiredArgsConstructor
 public class FjwtController {
 

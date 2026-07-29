@@ -63,6 +63,19 @@ class FjwtClaimsExtractorChainTest {
   }
 
   @Test
+  void whenGetClaimsWithContributorShouldMergeProviderIndependentClaims() {
+    FjwtClaimsExtractorChain target =
+        new FjwtClaimsExtractorChain(
+            Collections.emptyList(),
+            Collections.singletonList(source -> Map.of("tenant", source.getUsername())));
+
+    Map<String, Object> claims =
+        target.getClaims(new User("test", "test", Collections.emptyList()));
+
+    assertThat(claims).containsEntry("tenant", "test");
+  }
+
+  @Test
   void whenAddDataWithEmptyChainShouldDoNothing() {
     FjwtClaimsExtractorChain target = new FjwtClaimsExtractorChain(null);
     target.addData(claims, new FjwtSimpleUserDetailsBuilder("username"));

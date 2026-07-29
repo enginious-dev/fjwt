@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,7 @@ import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@Conditional(FjwtInteractiveAuthenticationCondition.class)
 @ConditionalOnProperty(prefix = "fjwt", name = "userSource", havingValue = "LDAP")
 public class FjwtLdapSourceConfig {
 

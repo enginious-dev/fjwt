@@ -14,11 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+import it.enginious.fjwt.core.FjwtClaimContributor;
 import it.enginious.fjwt.core.FjwtClaimsExtractor;
 import it.enginious.fjwt.core.FjwtClaimsExtractorChain;
 import it.enginious.fjwt.core.FjwtSimpleUserDetailsBuilder;
@@ -29,16 +28,15 @@ import it.enginious.fjwt.core.extractors.FjwtAuthoritiesExtractor;
 import it.enginious.fjwt.core.extractors.FjwtUserDetailsFlagsExtractor;
 
 /**
- * Provides {@link PasswordEncoder} and/or {@link UserDetailsService} beans they are missing. The
- * default for {@link PasswordEncoder} is {@link BCryptPasswordEncoder}, while for the {@link
- * UserDetailsService} is a service that always returns a user with username and password equal to
- * the username passed.
+ * Provides the common claims, user reconstruction, token invalidation, and clock infrastructure
+ * used by legacy JWT and OAuth 2.0 Authorization Server modes.
  *
  * @author Giuseppe Milazzo
  * @since 1.0.0
  */
 @Slf4j
 @Configuration
+@Conditional(FjwtInteractiveAuthenticationCondition.class)
 public class FjwtSecurityConfig {
 
   private static final String DEFAULT_EXTRACTORS_BEAN_REGISTRATION_PATTERN =
@@ -53,13 +51,15 @@ public class FjwtSecurityConfig {
   @Bean
   @ConditionalOnMissingBean(FjwtClaimsExtractorChain.class)
   public FjwtClaimsExtractorChain claimsExtractorChain(
-      Optional<List<FjwtClaimsExtractor>> extractors) {
+      Optional<List<FjwtClaimsExtractor>> extractors,
+      Optional<List<FjwtClaimContributor>> contributors) {
 
     log.debug(
         DEFAULT_BEAN_REGISTRATION_PATTERN,
         FjwtClaimsExtractorChain.class.getName(),
         FjwtClaimsExtractorChain.class.getName());
-    return new FjwtClaimsExtractorChain(extractors.orElse(new ArrayList<>()));
+    return new FjwtClaimsExtractorChain(
+        extractors.orElse(new ArrayList<>()), contributors.orElse(new ArrayList<>()));
   }
 
   /**

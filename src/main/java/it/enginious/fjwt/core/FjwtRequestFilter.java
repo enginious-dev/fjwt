@@ -15,6 +15,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,6 +37,11 @@ import it.enginious.fjwt.core.exceptions.FjwtTokenInvalidatorException;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(
+    prefix = "fjwt",
+    name = "security-mode",
+    havingValue = "LEGACY_JWT",
+    matchIfMissing = true)
 @RequiredArgsConstructor
 public class FjwtRequestFilter extends OncePerRequestFilter {
 

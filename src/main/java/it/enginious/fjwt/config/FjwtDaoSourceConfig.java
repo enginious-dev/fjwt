@@ -6,12 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import it.enginious.fjwt.core.FjwtDummyUserDetailsService;
@@ -24,6 +27,7 @@ import it.enginious.fjwt.core.FjwtDummyUserDetailsService;
  */
 @Slf4j
 @Configuration
+@Conditional(FjwtInteractiveAuthenticationCondition.class)
 @ConditionalOnProperty(
     prefix = "fjwt",
     name = "userSource",
@@ -32,7 +36,8 @@ import it.enginious.fjwt.core.FjwtDummyUserDetailsService;
 public class FjwtDaoSourceConfig {
 
   /**
-   * register the default {@link PasswordEncoder}
+   * register the default delegating {@link PasswordEncoder}. Existing BCrypt hashes without an
+   * encoding prefix remain supported.
    *
    * @return the default password encoder bean
    */
@@ -47,9 +52,12 @@ public class FjwtDaoSourceConfig {
 
     log.debug(
         DEFAULT_BEAN_REGISTRATION_PATTERN,
-        BCryptPasswordEncoder.class.getName(),
+        DelegatingPasswordEncoder.class.getName(),
         PasswordEncoder.class.getName());
-    return new BCryptPasswordEncoder();
+    DelegatingPasswordEncoder passwordEncoder =
+        (DelegatingPasswordEncoder) PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    passwordEncoder.setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());
+    return passwordEncoder;
   }
 
   /**

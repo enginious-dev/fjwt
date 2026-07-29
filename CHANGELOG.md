@@ -1,4 +1,15 @@
 # Changelog
+
+## Unreleased
+#### Enhancements:
+- added backward-compatible security modes for legacy JWT, OAuth 2.0 Resource Server, and OAuth 2.0 Authorization Server
+- added optional OpenID Connect support and standard OAuth 2.0 protocol endpoints
+- added standard scope and application-authority mapping for OAuth 2.0 JWT access tokens
+- added provider-independent `FjwtClaimContributor` support
+- changed the default password encoder to a delegating encoder with fallback support for legacy BCrypt hashes
+
+---
+
 ## v3.4.5 (?)
 #### Enhancements:
 - upgraded to java release 21

@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,11 @@ import it.enginious.fjwt.core.FjwtRequestFilter;
  */
 @Slf4j
 @Configuration
+@ConditionalOnProperty(
+    prefix = "fjwt",
+    name = "security-mode",
+    havingValue = "LEGACY_JWT",
+    matchIfMissing = true)
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
